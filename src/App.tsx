@@ -24,6 +24,11 @@ import HRDashboard from "./pages/hr/HRDashboard";
 import HRVacancies from "./pages/hr/HRVacancies";
 import HRApplications from "./pages/hr/HRApplications";
 
+// Reviewer pages
+import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard";
+import ReviewerApplications from "./pages/reviewer/ReviewerApplications";
+import ReviewerEvaluations from "./pages/reviewer/ReviewerEvaluations";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -100,12 +105,28 @@ const App = () => (
               }
             />
             
-            {/* Reviewer routes - placeholder */}
+            {/* Reviewer routes */}
             <Route
               path="/reviewer"
               element={
                 <ProtectedRoute allowedRoles={["reviewer"]}>
-                  <ApplicantDashboard />
+                  <ReviewerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reviewer/applications"
+              element={
+                <ProtectedRoute allowedRoles={["reviewer"]}>
+                  <ReviewerApplications />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reviewer/evaluations"
+              element={
+                <ProtectedRoute allowedRoles={["reviewer"]}>
+                  <ReviewerEvaluations />
                 </ProtectedRoute>
               }
             />
