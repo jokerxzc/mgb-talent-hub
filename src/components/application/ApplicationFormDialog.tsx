@@ -1,18 +1,18 @@
-import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Upload, FileText, Check, AlertCircle, Loader2 } from "lucide-react";
-import { DOCUMENT_TYPES, FILE_SIZE_LIMIT, ROUTES } from "@/lib/constants";
-import { motion, AnimatePresence } from "framer-motion";
+import { DOCUMENT_TYPES, FILE_SIZE_LIMIT } from "@/lib/constants";
+import { motion } from "framer-motion";
 
 interface ApplicationFormDialogProps {
   open: boolean;
@@ -35,7 +35,6 @@ export function ApplicationFormDialog({
 }: ApplicationFormDialogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("select");
@@ -73,19 +72,16 @@ export function ApplicationFormDialog({
     getDocumentsByType(type).some((d) => selectedDocuments.includes(d.id))
   );
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.type !== "application/pdf") {
-        toast({ title: "Only PDF files are allowed", variant: "destructive" });
-        return;
-      }
-      if (file.size > FILE_SIZE_LIMIT) {
-        toast({ title: "File size must be less than 5MB", variant: "destructive" });
-        return;
-      }
-      setSelectedFile(file);
+  const handleFileSelect = (file: File) => {
+    if (file.type !== "application/pdf") {
+      toast({ title: "Only PDF files are allowed", variant: "destructive" });
+      return;
     }
+    if (file.size > FILE_SIZE_LIMIT) {
+      toast({ title: "File size must be less than 5MB", variant: "destructive" });
+      return;
+    }
+    setSelectedFile(file);
   };
 
   const handleUpload = async () => {
@@ -306,53 +302,11 @@ export function ApplicationFormDialog({
 
               <div className="space-y-2">
                 <Label>File (PDF only, max 5MB) *</Label>
-                <div
-                  className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                    selectedFile ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                  }`}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <AnimatePresence mode="wait">
-                    {selectedFile ? (
-                      <motion.div
-                        key="file"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="flex flex-col items-center gap-2"
-                      >
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                          <FileText className="h-6 w-6 text-primary" />
-                        </div>
-                        <p className="text-sm font-medium">{selectedFile.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="empty"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex flex-col items-center gap-2"
-                      >
-                        <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                          <Upload className="h-6 w-6 text-muted-foreground" />
-                        </div>
-                        <p className="text-sm text-muted-foreground">Click to select a PDF file</p>
-                        <p className="text-xs text-muted-foreground">or drag and drop</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                </div>
+                <FileDropzone
+                  selectedFile={selectedFile}
+                  onFileSelect={handleFileSelect}
+                  onClear={() => setSelectedFile(null)}
+                />
               </div>
 
               <Button
