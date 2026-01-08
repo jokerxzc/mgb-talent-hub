@@ -4,16 +4,8 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { ApplicationFormDialog } from "@/components/application/ApplicationFormDialog";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -32,7 +24,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { EMPLOYMENT_TYPES, DOCUMENT_TYPES, ROUTES } from "@/lib/constants";
-import type { Tables } from "@/integrations/supabase/types";
 
 export default function VacancyDetail() {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +31,6 @@ export default function VacancyDetail() {
   const { user, isApplicant } = useAuth();
   const { toast } = useToast();
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
-  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   const { data: vacancy, isLoading } = useQuery({
     queryKey: ["vacancy", id],
@@ -51,19 +41,6 @@ export default function VacancyDetail() {
         .select("*")
         .eq("id", id!)
         .single();
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: userDocuments } = useQuery({
-    queryKey: ["user-documents", user?.id],
-    enabled: !!user && isApplyDialogOpen,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("documents")
-        .select("*")
-        .eq("user_id", user!.id);
       if (error) throw error;
       return data;
     },
@@ -84,69 +61,13 @@ export default function VacancyDetail() {
     },
   });
 
-  const applyMutation = useMutation({
-    mutationFn: async () => {
-      // Generate reference number
-      const { data: refData, error: refError } = await supabase.rpc("generate_reference_number");
-      if (refError) throw refError;
-
-      // Create application
-      const { data: appData, error: appError } = await supabase
-        .from("applications")
-        .insert({
-          user_id: user!.id,
-          vacancy_id: id!,
-          reference_number: refData,
-        })
-        .select()
-        .single();
-      if (appError) throw appError;
-
-      // Link selected documents
-      if (selectedDocuments.length > 0) {
-        const docLinks = selectedDocuments.map((docId) => ({
-          application_id: appData.id,
-          document_id: docId,
-        }));
-        const { error: linkError } = await supabase
-          .from("application_documents")
-          .insert(docLinks);
-        if (linkError) throw linkError;
-      }
-
-      return appData;
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "Application Submitted!",
-        description: `Your reference number is ${data.reference_number}`,
-      });
-      setIsApplyDialogOpen(false);
-      navigate(ROUTES.APPLICANT_APPLICATIONS);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error submitting application",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const toggleDocument = (docId: string) => {
-    setSelectedDocuments((prev) =>
-      prev.includes(docId) ? prev.filter((d) => d !== docId) : [...prev, docId]
-    );
+  const handleApplicationSuccess = (referenceNumber: string) => {
+    toast({
+      title: "Application Submitted!",
+      description: `Your reference number is ${referenceNumber}`,
+    });
+    navigate(ROUTES.APPLICANT_APPLICATIONS);
   };
-
-  const getDocumentsByType = (type: string) => {
-    return userDocuments?.filter((d) => d.document_type === type) || [];
-  };
-
-  const requiredDocs = vacancy?.required_documents || [];
-  const hasAllRequiredDocs = requiredDocs.every((type) =>
-    getDocumentsByType(type).some((d) => selectedDocuments.includes(d.id))
-  );
 
   if (isLoading) {
     return (
@@ -170,6 +91,7 @@ export default function VacancyDetail() {
   }
 
   const isDeadlinePassed = new Date(vacancy.application_deadline) < new Date();
+  const requiredDocs = vacancy.required_documents || [];
 
   return (
     <PublicLayout>
@@ -355,77 +277,20 @@ export default function VacancyDetail() {
           )}
         </div>
 
-        {/* Apply Dialog */}
-        <Dialog open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
-          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Apply for {vacancy.position_title}</DialogTitle>
-              <DialogDescription>
-                Select the documents to submit with your application
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4">
-              {requiredDocs.map((docType) => {
-                const docs = getDocumentsByType(docType);
-                const typeLabel = DOCUMENT_TYPES[docType as keyof typeof DOCUMENT_TYPES] || docType;
-                const hasDoc = docs.some((d) => selectedDocuments.includes(d.id));
-
-                return (
-                  <div key={docType} className="space-y-2">
-                    <Label className={`flex items-center gap-2 ${!hasDoc ? "text-destructive" : ""}`}>
-                      {typeLabel}
-                      <span className="text-destructive">*</span>
-                    </Label>
-                    {docs.length > 0 ? (
-                      <div className="space-y-2">
-                        {docs.map((doc) => (
-                          <label
-                            key={doc.id}
-                            className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg cursor-pointer hover:bg-muted transition-colors"
-                          >
-                            <Checkbox
-                              checked={selectedDocuments.includes(doc.id)}
-                              onCheckedChange={() => toggleDocument(doc.id)}
-                            />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{doc.file_name}</p>
-                              <p className="text-xs text-muted-foreground">
-                                Uploaded {format(new Date(doc.uploaded_at), "MMM d, yyyy")}
-                              </p>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
-                        You haven't uploaded a {typeLabel.toLowerCase()} yet.{" "}
-                        <Link to={ROUTES.APPLICANT_DOCUMENTS} className="underline">
-                          Upload now
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-
-              <div className="pt-4 border-t">
-                <Button
-                  onClick={() => applyMutation.mutate()}
-                  disabled={!hasAllRequiredDocs || applyMutation.isPending}
-                  className="w-full"
-                >
-                  {applyMutation.isPending ? "Submitting..." : "Submit Application"}
-                </Button>
-                {!hasAllRequiredDocs && (
-                  <p className="text-xs text-destructive mt-2 text-center">
-                    Please select all required documents to submit your application
-                  </p>
-                )}
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Application Form Dialog */}
+        {user && vacancy && (
+          <ApplicationFormDialog
+            open={isApplyDialogOpen}
+            onOpenChange={setIsApplyDialogOpen}
+            vacancy={{
+              id: vacancy.id,
+              position_title: vacancy.position_title,
+              required_documents: vacancy.required_documents,
+            }}
+            userId={user.id}
+            onSuccess={handleApplicationSuccess}
+          />
+        )}
       </div>
     </PublicLayout>
   );
