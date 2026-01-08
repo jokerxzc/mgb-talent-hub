@@ -1,8 +1,7 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -18,12 +17,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Upload, FileText, Trash2, Download, Eye } from "lucide-react";
+import { Upload, FileText, Trash2, Download } from "lucide-react";
 import { DOCUMENT_TYPES, FILE_SIZE_LIMIT } from "@/lib/constants";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -31,7 +31,6 @@ export default function Documents() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [documentType, setDocumentType] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -51,19 +50,16 @@ export default function Documents() {
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.type !== "application/pdf") {
-        toast({ title: "Only PDF files are allowed", variant: "destructive" });
-        return;
-      }
-      if (file.size > FILE_SIZE_LIMIT) {
-        toast({ title: "File size must be less than 5MB", variant: "destructive" });
-        return;
-      }
-      setSelectedFile(file);
+  const handleFileSelect = (file: File) => {
+    if (file.type !== "application/pdf") {
+      toast({ title: "Only PDF files are allowed", variant: "destructive" });
+      return;
     }
+    if (file.size > FILE_SIZE_LIMIT) {
+      toast({ title: "File size must be less than 5MB", variant: "destructive" });
+      return;
+    }
+    setSelectedFile(file);
   };
 
   const handleUpload = async () => {
@@ -192,29 +188,11 @@ export default function Documents() {
                 </div>
                 <div className="space-y-2">
                   <Label>File (PDF only, max 5MB) *</Label>
-                  <div
-                    className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    {selectedFile ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <FileText className="h-5 w-5 text-primary" />
-                        <span className="text-sm">{selectedFile.name}</span>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">Click to select a PDF file</p>
-                      </>
-                    )}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".pdf"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </div>
+                  <FileDropzone
+                    selectedFile={selectedFile}
+                    onFileSelect={handleFileSelect}
+                    onClear={() => setSelectedFile(null)}
+                  />
                 </div>
                 <Button
                   onClick={handleUpload}
