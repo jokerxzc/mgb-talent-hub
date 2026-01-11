@@ -38,7 +38,13 @@ export default function VacancyDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vacancies")
-        .select("*")
+        .select(`
+          id, position_title, employment_type, salary_grade, daily_rate,
+          office_division, place_of_assignment, slots, status,
+          application_deadline, description, required_documents,
+          qualification_education, qualification_experience,
+          qualification_training, qualification_eligibility
+        `)
         .eq("id", id!)
         .single();
       if (error) throw error;
