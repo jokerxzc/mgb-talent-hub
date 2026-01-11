@@ -59,7 +59,11 @@ export default function Vacancies() {
   const fetchVacancies = async () => {
     const { data, error } = await supabase
       .from("vacancies")
-      .select("*")
+      .select(`
+        id, position_title, employment_type, salary_grade,
+        office_division, place_of_assignment, slots, status,
+        application_deadline
+      `)
       .eq("status", "published")
       .order("created_at", { ascending: false });
 
