@@ -155,7 +155,7 @@ const Index = () => {
                 transition={{ delay: 0.3 }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
               >
-                Build Your Career at <span className="text-accent">MGB</span>
+                Build Your Career at <span className="text-accent">MGB Region 2</span>
               </motion.h1>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
@@ -163,8 +163,8 @@ const Index = () => {
                 transition={{ delay: 0.4 }}
                 className="text-lg md:text-xl text-primary-foreground/85 max-w-xl"
               >
-                Join the Mines and Geosciences Bureau and contribute to the sustainable 
-                development of the Philippines' mineral resources.
+                Join the Mines and Geosciences Bureau Region 2 and contribute to the sustainable 
+                development of the Philippines' mineral resources in the Cagayan Valley region.
               </motion.p>
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -202,8 +202,8 @@ const Index = () => {
               {[
                 { icon: Briefcase, value: stats?.activePositions || 0, label: "Open Positions" },
                 { icon: Users, value: stats?.totalApplications || 0, label: "Applications" },
-                { icon: Building2, value: 16, label: "Regional Offices" },
-                { icon: MapPin, value: "1,000+", label: "Employees" },
+                { icon: Building2, value: 16, label: "Regional Offices" }, // Assuming this is a general stat, could be updated if Region 2 specific
+                { icon: MapPin, value: "1,000+", label: "Employees" }, // Assuming this is a general stat, could be updated if Region 2 specific
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -278,7 +278,7 @@ const Index = () => {
                 Opportunities
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold">Featured Vacancies</h2>
-              <p className="text-muted-foreground mt-1">Explore current openings across all offices</p>
+              <p className="text-muted-foreground mt-1">Explore current openings across all offices in Region 2</p>
             </div>
             <Button asChild variant="outline" className="hover:scale-105 transition-transform">
               <Link to="/vacancies">
@@ -385,9 +385,9 @@ const Index = () => {
             <Badge variant="outline" className="mb-3 text-primary border-primary">
               Why Join Us
             </Badge>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">A Career That Matters</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">A Career That Matters in Region 2</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Be part of the government agency responsible for managing the country's 
+              Be part of the government agency responsible for managing the Cagayan Valley region's 
               mineral resources and geosciences development.
             </p>
           </motion.div>
@@ -454,7 +454,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-2xl md:text-3xl font-bold mb-4"
           >
-            Ready to Make a Difference?
+            Ready to Make a Difference in Region 2?
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -464,7 +464,7 @@ const Index = () => {
             className="text-primary-foreground/80 max-w-2xl mx-auto mb-8"
           >
             Join our team of dedicated professionals committed to the sustainable development 
-            of the Philippines' natural resources.
+            of the Cagayan Valley region's natural resources.
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

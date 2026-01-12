@@ -12,15 +12,15 @@ export function Footer() {
               <img src="/mgb-logo.png" alt="MGB Logo" className="h-10 w-10 object-contain" />
               <div>
                 <p className="font-semibold text-sidebar-foreground">
-                  Mines and Geosciences Bureau
+                  Mines and Geosciences Bureau Region 2
                 </p>
                 <p className="text-xs text-sidebar-foreground/70">DENR</p>
               </div>
             </div>
             <p className="text-sm text-sidebar-foreground/70 leading-relaxed">
-              The Mines and Geosciences Bureau is a government agency under the 
+              The Mines and Geosciences Bureau Region 2 is a government agency under the 
               Department of Environment and Natural Resources (DENR) responsible 
-              for the conservation, management, and development of mineral resources.
+              for the conservation, management, and development of mineral resources in Region 2.
             </p>
           </div>
 
@@ -41,12 +41,12 @@ export function Footer() {
                 Job Vacancies
               </Link>
               <a
-                href="https://mgb.gov.ph"
+                href="https://region2.mgb.gov.ph"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
               >
-                Official MGB Website
+                Official MGB Region 2 Website
               </a>
               <a
                 href="https://denr.gov.ph"
@@ -66,16 +66,16 @@ export function Footer() {
               <div className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 mt-0.5 text-sidebar-foreground/70" />
                 <p className="text-sm text-sidebar-foreground/70">
-                  North Avenue, Diliman, Quezon City, Philippines
+                  Government Center Carig Sur, Tuguegarao City
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-sidebar-foreground/70" />
-                <p className="text-sm text-sidebar-foreground/70">(02) 8928-8544</p>
+                <p className="text-sm text-sidebar-foreground/70">(+63 078)304-5561; (+63 078)304-0508, (+63 078)304-0694</p>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4 text-sidebar-foreground/70" />
-                <p className="text-sm text-sidebar-foreground/70">mgb@mgb.gov.ph</p>
+                <p className="text-sm text-sidebar-foreground/70">mgb_2@yahoo.com / region2@mgb.gov.ph</p>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ export function Footer() {
         <div className="border-t border-sidebar-border mt-8 pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-xs text-sidebar-foreground/60">
-              © {new Date().getFullYear()} Mines and Geosciences Bureau. All rights reserved.
+              © {new Date().getFullYear()} Mines and Geosciences Bureau Region 2. All rights reserved.
             </p>
             <p className="text-xs text-sidebar-foreground/60">
               Republic of the Philippines

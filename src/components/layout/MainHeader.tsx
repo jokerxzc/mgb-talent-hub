@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, LogOut, LayoutDashboard, FileText, Briefcase, Menu, X, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react"; // Corrected this line
+import { useState, useEffect } from "react";
 import { ROUTES } from "@/lib/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -71,7 +71,7 @@ export function MainHeader() {
             </motion.div>
             <div className="hidden sm:block">
               <p className="font-semibold text-foreground leading-tight group-hover:text-primary transition-colors">
-                Mines and Geosciences Bureau
+                MGB Region 2
               </p>
               <p className="text-xs text-muted-foreground">Online Job Application System</p>
             </div>
