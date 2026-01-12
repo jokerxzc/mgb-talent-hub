@@ -17,6 +17,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -33,6 +34,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const handleSignOut = async () => {
     await signOut();
@@ -42,27 +44,28 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const getNavItems = (): NavItem[] => {
     if (role === "hr_admin") {
       return [
-        { label: "Dashboard", href: ROUTES.HR_DASHBOARD, icon: <LayoutDashboard className="h-5 w-5" /> },
-        { label: "Vacancies", href: ROUTES.HR_VACANCIES, icon: <Briefcase className="h-5 w-5" /> },
-        { label: "Applications", href: ROUTES.HR_APPLICATIONS, icon: <FileText className="h-5 w-5" /> },
-        { label: "Reports", href: ROUTES.HR_REPORTS, icon: <BarChart3 className="h-5 w-5" /> },
-        { label: "Users", href: ROUTES.HR_USERS, icon: <Users className="h-5 w-5" /> },
+        { label: t("hr_dashboard_sidebar"), href: ROUTES.HR_DASHBOARD, icon: <LayoutDashboard className="h-5 w-5" /> },
+        { label: t("hr_vacancies_sidebar"), href: ROUTES.HR_VACANCIES, icon: <Briefcase className="h-5 w-5" /> },
+        { label: t("hr_applications_sidebar"), href: ROUTES.HR_APPLICATIONS, icon: <FileText className="h-5 w-5" /> },
+        { label: t("hr_reports_sidebar"), href: ROUTES.HR_REPORTS, icon: <BarChart3 className="h-5 w-5" /> },
+        { label: t("hr_users_sidebar"), href: ROUTES.HR_USERS, icon: <Users className="h-5 w-5" /> },
       ];
     }
 
     if (role === "reviewer") {
       return [
-        { label: "Dashboard", href: ROUTES.REVIEWER_DASHBOARD, icon: <LayoutDashboard className="h-5 w-5" /> },
-        { label: "Assigned Applications", href: ROUTES.REVIEWER_APPLICATIONS, icon: <ClipboardCheck className="h-5 w-5" /> },
+        { label: t("reviewer_dashboard_sidebar"), href: ROUTES.REVIEWER_DASHBOARD, icon: <LayoutDashboard className="h-5 w-5" /> },
+        { label: t("reviewer_assigned_applications_sidebar"), href: ROUTES.REVIEWER_APPLICATIONS, icon: <ClipboardCheck className="h-5 w-5" /> },
+        { label: t("reviewer_evaluations_sidebar"), href: ROUTES.REVIEWER_EVALUATIONS, icon: <FileText className="h-5 w-5" /> }, // Added evaluations link
       ];
     }
 
     // Applicant
     return [
-      { label: "Dashboard", href: ROUTES.APPLICANT_DASHBOARD, icon: <LayoutDashboard className="h-5 w-5" /> },
-      { label: "My Applications", href: ROUTES.APPLICANT_APPLICATIONS, icon: <FileText className="h-5 w-5" /> },
-      { label: "My Documents", href: ROUTES.APPLICANT_DOCUMENTS, icon: <FolderOpen className="h-5 w-5" /> },
-      { label: "Profile", href: ROUTES.APPLICANT_PROFILE, icon: <User className="h-5 w-5" /> },
+      { label: t("applicant_dashboard"), href: ROUTES.APPLICANT_DASHBOARD, icon: <LayoutDashboard className="h-5 w-5" /> },
+      { label: t("my_applications_applicant"), href: ROUTES.APPLICANT_APPLICATIONS, icon: <FileText className="h-5 w-5" /> },
+      { label: t("my_documents_applicant"), href: ROUTES.APPLICANT_DOCUMENTS, icon: <FolderOpen className="h-5 w-5" /> },
+      { label: t("profile_applicant"), href: ROUTES.APPLICANT_PROFILE, icon: <User className="h-5 w-5" /> },
     ];
   };
 
@@ -71,11 +74,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const getRoleLabel = () => {
     switch (role) {
       case "hr_admin":
-        return "HR Administrator";
+        return t("hr_administrator");
       case "reviewer":
-        return "Reviewer";
+        return t("reviewer");
       default:
-        return "Applicant";
+        return t("applicant");
     }
   };
 
@@ -94,7 +97,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {sidebarOpen && (
               <Link to="/" className="flex items-center gap-2">
                 <img src="/mgb-logo.png" alt="MGB Logo" className="h-8 w-8 object-contain" />
-                <span className="font-semibold text-sidebar-foreground text-sm">MGB Jobs</span>
+                <span className="font-semibold text-sidebar-foreground text-sm">{t("mgb_region_2")} Jobs</span>
               </Link>
             )}
             <Button
@@ -147,7 +150,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             >
               <LogOut className="h-5 w-5" />
-              {sidebarOpen && <span className="ml-3">Sign Out</span>}
+              {sidebarOpen && <span className="ml-3">{t("sign_out")}</span>}
             </Button>
           </div>
         </div>

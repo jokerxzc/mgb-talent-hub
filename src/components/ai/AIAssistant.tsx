@@ -18,6 +18,7 @@ import {
   MessageCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface Message {
   role: "user" | "assistant";
@@ -31,27 +32,6 @@ interface QuickAction {
   prompt: string;
 }
 
-const quickActions: QuickAction[] = [
-  {
-    icon: <Target className="h-4 w-4" />,
-    label: "Application Tips",
-    type: "application-tips",
-    prompt: "What tips do you have for a strong government job application?",
-  },
-  {
-    icon: <FileQuestion className="h-4 w-4" />,
-    label: "Required Documents",
-    type: "general",
-    prompt: "What documents do I need to prepare for my application?",
-  },
-  {
-    icon: <Lightbulb className="h-4 w-4" />,
-    label: "Civil Service Info",
-    type: "general",
-    prompt: "What civil service eligibility do I need for government jobs?",
-  },
-];
-
 export function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -59,6 +39,28 @@ export function AIAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { t } = useTranslation(); // Initialize useTranslation
+
+  const quickActions: QuickAction[] = [
+    {
+      icon: <Target className="h-4 w-4" />,
+      label: t("application_tips"),
+      type: "application-tips",
+      prompt: "What tips do you have for a strong government job application?",
+    },
+    {
+      icon: <FileQuestion className="h-4 w-4" />,
+      label: t("required_documents_ai"),
+      type: "general",
+      prompt: "What documents do I need to prepare for my application?",
+    },
+    {
+      icon: <Lightbulb className="h-4 w-4" />,
+      label: t("civil_service_info"),
+      type: "general",
+      prompt: "What civil service eligibility do I need for government jobs?",
+    },
+  ];
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -86,19 +88,19 @@ export function AIAssistant() {
 
       const assistantMessage: Message = {
         role: "assistant",
-        content: data.response || "I'm sorry, I couldn't process that request.",
+        content: data.response || t("having_trouble_responding"),
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("AI error:", error);
       toast({
-        title: "AI Assistant Error",
-        description: "Unable to get a response. Please try again.",
+        title: t("ai_assistant_error_title"),
+        description: t("unable_to_get_response"),
         variant: "destructive",
       });
       const errorMessage: Message = {
         role: "assistant",
-        content: "I'm having trouble responding right now. Please try again in a moment.",
+        content: t("having_trouble_responding"),
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -162,9 +164,9 @@ export function AIAssistant() {
               <CardHeader className="bg-gradient-to-r from-primary to-accent text-primary-foreground py-4">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Bot className="h-5 w-5" />
-                  AI Career Assistant
+                  {t("ai_career_assistant")}
                   <Badge variant="secondary" className="ml-auto text-xs bg-white/20 text-white border-0">
-                    Beta
+                    {t("beta")}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -177,11 +179,11 @@ export function AIAssistant() {
                           <MessageCircle className="h-6 w-6 text-primary" />
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Hi! I'm here to help with your job application. Ask me anything!
+                          {t("hi_im_here_to_help")}
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground px-1">Quick Actions</p>
+                        <p className="text-xs font-medium text-muted-foreground px-1">{t("quick_actions_ai")}</p>
                         {quickActions.map((action, idx) => (
                           <Button
                             key={idx}
@@ -206,7 +208,7 @@ export function AIAssistant() {
                           className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                         >
                           <div
-                            className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
+                            className={`max-w-[85%] rounded-2xl rounded-bl-md px-4 py-2.5 text-sm ${
                               msg.role === "user"
                                 ? "bg-primary text-primary-foreground rounded-br-md"
                                 : "bg-muted rounded-bl-md"
@@ -242,7 +244,7 @@ export function AIAssistant() {
                     <Textarea
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      placeholder="Ask about jobs, qualifications..."
+                      placeholder={t("ask_about_jobs_qualifications")}
                       className="min-h-[44px] max-h-[120px] resize-none text-sm"
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {

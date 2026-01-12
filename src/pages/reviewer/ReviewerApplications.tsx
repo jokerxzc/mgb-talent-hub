@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import { EvaluationForm } from "@/components/reviewer/EvaluationForm";
 import { ApplicationDetail } from "@/components/reviewer/ApplicationDetail";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 type Application = Tables<"applications"> & {
   vacancy: Tables<"vacancies"> | null;
@@ -33,6 +34,7 @@ type Application = Tables<"applications"> & {
 
 export default function ReviewerApplications() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -137,20 +139,20 @@ export default function ReviewerApplications() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Assigned Applications</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t("assigned_applications_reviewer")}</h1>
           <p className="text-muted-foreground mt-1">
-            Review and evaluate applications assigned to you
+            {t("review_evaluate_assigned_applications_desc")}
           </p>
         </div>
 
         <Card>
           <CardHeader>
             <div className="flex flex-col md:flex-row gap-4 justify-between">
-              <CardTitle>Applications for Review</CardTitle>
+              <CardTitle>{t("applications_for_review")}</CardTitle>
               <div className="relative w-full md:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search applications..."
+                  placeholder={t("search_applications_reviewer")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9"
@@ -161,24 +163,24 @@ export default function ReviewerApplications() {
           <CardContent>
             {loading ? (
               <div className="text-center py-8 text-muted-foreground">
-                Loading applications...
+                {t("loading_applications")}
               </div>
             ) : filteredApplications.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                No applications assigned to you yet.
+                {t("no_applications_assigned")}
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Reference No.</TableHead>
-                      <TableHead>Applicant</TableHead>
-                      <TableHead>Position</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Submitted</TableHead>
-                      <TableHead>Evaluation</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("reference_no")}</TableHead>
+                      <TableHead>{t("applicant")}</TableHead>
+                      <TableHead>{t("position")}</TableHead>
+                      <TableHead>{t("status")}</TableHead>
+                      <TableHead>{t("submitted")}</TableHead>
+                      <TableHead>{t("evaluation")}</TableHead>
+                      <TableHead className="text-right">{t("actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -199,9 +201,9 @@ export default function ReviewerApplications() {
                         </TableCell>
                         <TableCell>
                           {existingEvaluations[app.id] ? (
-                            <span className="text-success text-sm font-medium">Completed</span>
+                            <span className="text-success text-sm font-medium">{t("completed")}</span>
                           ) : (
-                            <span className="text-warning text-sm font-medium">Pending</span>
+                            <span className="text-warning text-sm font-medium">{t("pending")}</span>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
@@ -219,7 +221,7 @@ export default function ReviewerApplications() {
                               onClick={() => handleEvaluate(app)}
                             >
                               <FileEdit className="h-4 w-4 mr-1" />
-                              {existingEvaluations[app.id] ? "Edit" : "Evaluate"}
+                              {existingEvaluations[app.id] ? t("edit") : t("evaluate")}
                             </Button>
                           </div>
                         </TableCell>
@@ -237,7 +239,7 @@ export default function ReviewerApplications() {
       <Dialog open={showDetail} onOpenChange={setShowDetail}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Application Details</DialogTitle>
+            <DialogTitle>{t("application_details_reviewer")}</DialogTitle>
           </DialogHeader>
           {selectedApp && <ApplicationDetail application={selectedApp} />}
         </DialogContent>
@@ -249,8 +251,8 @@ export default function ReviewerApplications() {
           <DialogHeader>
             <DialogTitle>
               {existingEvaluations[selectedApp?.id || ""]
-                ? "Edit Evaluation"
-                : "Submit Evaluation"}
+                ? t("edit_evaluation_form_dialog_title")
+                : t("evaluation_form_dialog_title")}
             </DialogTitle>
           </DialogHeader>
           {selectedApp && (

@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -30,6 +31,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -57,7 +59,7 @@ export default function Auth() {
         if (!result.success) {
           const fieldErrors: Record<string, string> = {};
           result.error.errors.forEach((err) => {
-            if (err.path[0]) fieldErrors[err.path[0].toString()] = err.message;
+            if (err.path[0]) fieldErrors[err.path[0].toString()] = t(err.message as any); // Translate Zod errors
           });
           setErrors(fieldErrors);
           setLoading(false);
@@ -73,22 +75,22 @@ export default function Auth() {
 
         if (error) {
           if (error.message.includes("already registered")) {
-            setErrors({ email: "This email is already registered" });
+            setErrors({ email: t("email_already_registered") });
           } else {
-            toast({ title: "Registration failed", description: error.message, variant: "destructive" });
+            toast({ title: t("registration_failed"), description: error.message, variant: "destructive" });
           }
           setLoading(false);
           return;
         }
 
-        toast({ title: "Account created!", description: "You can now sign in." });
+        toast({ title: t("account_created"), description: t("you_can_now_sign_in") });
         navigate("/dashboard");
       } else {
         const result = loginSchema.safeParse(formData);
         if (!result.success) {
           const fieldErrors: Record<string, string> = {};
           result.error.errors.forEach((err) => {
-            if (err.path[0]) fieldErrors[err.path[0].toString()] = err.message;
+            if (err.path[0]) fieldErrors[err.path[0].toString()] = t(err.message as any); // Translate Zod errors
           });
           setErrors(fieldErrors);
           setLoading(false);
@@ -99,9 +101,9 @@ export default function Auth() {
 
         if (error) {
           if (error.message.includes("Invalid login")) {
-            setErrors({ password: "Invalid email or password" });
+            setErrors({ password: t("invalid_email_or_password") });
           } else {
-            toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+            toast({ title: t("sign_in_failed"), description: error.message, variant: "destructive" });
           }
           setLoading(false);
           return;
@@ -110,7 +112,7 @@ export default function Auth() {
         navigate("/dashboard");
       }
     } catch (err) {
-      toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
+      toast({ title: t("unknown_error"), description: t("an_unexpected_error_occurred"), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -124,11 +126,11 @@ export default function Auth() {
             <div className="mx-auto mb-4 h-12 w-12 flex-shrink-0">
               <img src="/mgb-logo.png" alt="MGB Logo" className="h-full w-full object-contain" />
             </div>
-            <CardTitle>{isRegister ? "Create Account" : "Sign In"}</CardTitle>
+            <CardTitle>{isRegister ? t("create_account_auth") : t("sign_in_auth")}</CardTitle>
             <CardDescription>
               {isRegister
-                ? "Register to apply for job opportunities at MGB"
-                : "Access your MGB job application portal"}
+                ? t("register_to_apply")
+                : t("access_your_portal")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -136,7 +138,7 @@ export default function Auth() {
               {isRegister && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName">{t("first_name")}</Label>
                     <Input
                       id="firstName"
                       name="firstName"
@@ -147,7 +149,7 @@ export default function Auth() {
                     {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName">{t("last_name")}</Label>
                     <Input
                       id="lastName"
                       name="lastName"
@@ -161,7 +163,7 @@ export default function Auth() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -174,7 +176,7 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Input
                   id="password"
                   name="password"
@@ -188,7 +190,7 @@ export default function Auth() {
 
               {isRegister && (
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">{t("confirm_password")}</Label>
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -203,23 +205,23 @@ export default function Auth() {
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isRegister ? "Create Account" : "Sign In"}
+                {isRegister ? t("create_account_button") : t("sign_in_auth")}
               </Button>
             </form>
 
             <div className="mt-6 text-center text-sm">
               {isRegister ? (
                 <p className="text-muted-foreground">
-                  Already have an account?{" "}
+                  {t("already_have_account")}{" "}
                   <Link to="/auth" className="text-primary hover:underline font-medium">
-                    Sign in
+                    {t("sign_in")}
                   </Link>
                 </p>
               ) : (
                 <p className="text-muted-foreground">
-                  Don't have an account?{" "}
+                  {t("dont_have_account")}{" "}
                   <Link to="/auth?mode=register" className="text-primary hover:underline font-medium">
-                    Register
+                    {t("register")}
                   </Link>
                 </p>
               )}

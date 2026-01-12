@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Loader2, CheckCircle2, AlertCircle, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface JobMatchAnalysisProps {
   vacancy: {
@@ -23,6 +24,7 @@ export function JobMatchAnalysis({ vacancy, userEducation = [], userExperience =
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const analyzeMatch = async () => {
     setIsLoading(true);
@@ -53,8 +55,8 @@ export function JobMatchAnalysis({ vacancy, userEducation = [], userExperience =
     } catch (error) {
       console.error("Match analysis error:", error);
       toast({
-        title: "Analysis Failed",
-        description: "Unable to analyze your match. Please try again.",
+        title: t("analysis_failed"),
+        description: t("unable_to_analyze_match"),
         variant: "destructive",
       });
     } finally {
@@ -89,7 +91,7 @@ export function JobMatchAnalysis({ vacancy, userEducation = [], userExperience =
         ) : (
           <Sparkles className="h-4 w-4 text-primary" />
         )}
-        {isLoading ? "Analyzing..." : "AI Match Analysis"}
+        {isLoading ? t("analyzing") : t("ai_match_analysis")}
       </Button>
 
       {isExpanded && (
@@ -103,13 +105,13 @@ export function JobMatchAnalysis({ vacancy, userEducation = [], userExperience =
               {isLoading ? (
                 <div className="flex items-center gap-3 text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span className="text-sm">Analyzing your qualifications...</span>
+                  <span className="text-sm">{t("analyzing_qualifications")}</span>
                 </div>
               ) : analysis ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 font-medium text-sm">
                     {getMatchIcon()}
-                    AI Analysis
+                    {t("ai_analysis")}
                   </div>
                   <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
                     {analysis}

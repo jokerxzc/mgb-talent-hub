@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { FileText, Briefcase, Calendar, ArrowRight } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface ApplicationWithVacancy extends Tables<"applications"> {
   vacancy: Tables<"vacancies"> | null;
@@ -17,6 +18,7 @@ interface ApplicationWithVacancy extends Tables<"applications"> {
 
 export default function Applications() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ["my-applications", user?.id],
@@ -57,13 +59,13 @@ export default function Applications() {
       <div className="animate-fade-in space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">My Applications</h1>
-            <p className="text-muted-foreground">Track your job application status</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("my_applications_page_title")}</h1>
+            <p className="text-muted-foreground">{t("track_job_application_status")}</p>
           </div>
           <Button asChild>
             <Link to={ROUTES.VACANCIES}>
               <Briefcase className="h-4 w-4 mr-2" />
-              Browse Vacancies
+              {t("browse_vacancies_button")}
             </Link>
           </Button>
         </div>
@@ -71,7 +73,7 @@ export default function Applications() {
         {isLoading ? (
           <Card>
             <CardContent className="py-8 text-center text-muted-foreground">
-              Loading...
+              {t("loading")}
             </CardContent>
           </Card>
         ) : applications && applications.length > 0 ? (
@@ -99,17 +101,17 @@ export default function Applications() {
 
                         <div className="mt-4 grid sm:grid-cols-3 gap-4">
                           <div>
-                            <p className="text-xs text-muted-foreground">Reference Number</p>
+                            <p className="text-xs text-muted-foreground">{t("reference_number")}</p>
                             <p className="font-mono text-sm">{app.reference_number}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Submitted</p>
+                            <p className="text-xs text-muted-foreground">{t("submitted")}</p>
                             <p className="text-sm">
                               {format(new Date(app.submitted_at), "MMMM d, yyyy")}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Status</p>
+                            <p className="text-xs text-muted-foreground">{t("status")}</p>
                             <div className="mt-1">
                               <StatusBadge status={app.status || "submitted"} type="application" />
                             </div>
@@ -119,7 +121,7 @@ export default function Applications() {
                         {/* Status Timeline */}
                         {history.length > 0 && (
                           <div className="mt-4 pt-4 border-t">
-                            <p className="text-xs text-muted-foreground mb-2">Status History</p>
+                            <p className="text-xs text-muted-foreground mb-2">{t("status_history")}</p>
                             <div className="space-y-2">
                               {history.slice(0, 3).map((h) => (
                                 <div
@@ -128,7 +130,7 @@ export default function Applications() {
                                 >
                                   <div className="h-2 w-2 rounded-full bg-primary" />
                                   <span className="capitalize">
-                                    {h.new_status.replace("_", " ")}
+                                    {t(`status_${h.new_status}`)}
                                   </span>
                                   <span className="text-muted-foreground">
                                     • {format(new Date(h.created_at), "MMM d, yyyy")}
@@ -154,13 +156,13 @@ export default function Applications() {
           <Card>
             <CardContent className="py-12 text-center">
               <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No applications yet</h3>
+              <h3 className="text-lg font-medium mb-2">{t("no_applications_yet_applicant")}</h3>
               <p className="text-muted-foreground mb-4">
-                Start by browsing available job vacancies and submitting your application
+                {t("start_by_browsing_vacancies")}
               </p>
               <Button asChild>
                 <Link to={ROUTES.VACANCIES}>
-                  Browse Vacancies <ArrowRight className="ml-2 h-4 w-4" />
+                  {t("browse_vacancies_arrow")} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </CardContent>

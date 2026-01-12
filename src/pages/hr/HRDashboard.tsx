@@ -27,8 +27,11 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 export default function HRDashboard() {
+  const { t } = useTranslation(); // Initialize useTranslation
+
   const { data: stats } = useQuery({
     queryKey: ["hr-dashboard-stats"],
     queryFn: async () => {
@@ -95,9 +98,9 @@ export default function HRDashboard() {
   });
 
   const statusData = [
-    { name: "Submitted", value: stats?.pendingReview || 0, color: "hsl(var(--info))" },
-    { name: "Under Review", value: stats?.underReview || 0, color: "hsl(var(--warning))" },
-    { name: "Shortlisted", value: stats?.shortlisted || 0, color: "hsl(var(--primary))" },
+    { name: t("status_submitted"), value: stats?.pendingReview || 0, color: "hsl(var(--info))" },
+    { name: t("status_under_review"), value: stats?.underReview || 0, color: "hsl(var(--warning))" },
+    { name: t("status_shortlisted"), value: stats?.shortlisted || 0, color: "hsl(var(--primary))" },
   ];
 
   return (
@@ -106,13 +109,13 @@ export default function HRDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">HR Dashboard</h1>
-            <p className="text-muted-foreground">Manage vacancies and track applications</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("hr_dashboard")}</h1>
+            <p className="text-muted-foreground">{t("manage_vacancies_track_applications")}</p>
           </div>
           <Button asChild>
             <Link to={ROUTES.HR_VACANCIES}>
               <Plus className="h-4 w-4 mr-2" />
-              New Vacancy
+              {t("new_vacancy")}
             </Link>
           </Button>
         </div>
@@ -121,44 +124,44 @@ export default function HRDashboard() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Active Vacancies</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("active_vacancies")}</CardTitle>
               <Briefcase className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.publishedVacancies || 0}</div>
               <p className="text-xs text-muted-foreground">
-                {stats?.totalVacancies || 0} total vacancies
+                {stats?.totalVacancies || 0} {t("total_vacancies")}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("total_applications")}</CardTitle>
               <FileText className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.totalApplications || 0}</div>
-              <p className="text-xs text-muted-foreground">All time received</p>
+              <p className="text-xs text-muted-foreground">{t("all_time_received")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("pending_review")}</CardTitle>
               <Clock className="h-4 w-4 text-warning" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.pendingReview || 0}</div>
-              <p className="text-xs text-muted-foreground">Awaiting action</p>
+              <p className="text-xs text-muted-foreground">{t("awaiting_action")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Shortlisted</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("shortlisted_hr")}</CardTitle>
               <TrendingUp className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.shortlisted || 0}</div>
-              <p className="text-xs text-muted-foreground">Ready for interview</p>
+              <p className="text-xs text-muted-foreground">{t("ready_for_interview")}</p>
             </CardContent>
           </Card>
         </div>
@@ -167,7 +170,7 @@ export default function HRDashboard() {
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Applications per Vacancy</CardTitle>
+              <CardTitle className="text-base">{t("applications_per_vacancy")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[250px]">
@@ -183,7 +186,7 @@ export default function HRDashboard() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="h-full flex items-center justify-center text-muted-foreground">
-                    No data available
+                    {t("no_data_available")}
                   </div>
                 )}
               </div>
@@ -192,7 +195,7 @@ export default function HRDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Application Status Distribution</CardTitle>
+              <CardTitle className="text-base">{t("application_status_distribution")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[250px]">
@@ -218,7 +221,7 @@ export default function HRDashboard() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="h-full flex items-center justify-center text-muted-foreground">
-                    No applications yet
+                    {t("no_applications_yet_chart")}
                   </div>
                 )}
               </div>
@@ -229,10 +232,10 @@ export default function HRDashboard() {
         {/* Recent Applications */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Recent Applications</CardTitle>
+            <CardTitle className="text-base">{t("recent_applications_hr")}</CardTitle>
             <Button variant="ghost" size="sm" asChild>
               <Link to={ROUTES.HR_APPLICATIONS}>
-                View All <ArrowRight className="ml-2 h-4 w-4" />
+                {t("view_all")} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </CardHeader>
@@ -255,7 +258,7 @@ export default function HRDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-center py-8">No applications yet</p>
+              <p className="text-muted-foreground text-center py-8">{t("no_applications_yet")}</p>
             )}
           </CardContent>
         </Card>

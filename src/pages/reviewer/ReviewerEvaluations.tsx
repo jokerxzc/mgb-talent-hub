@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Eye, Star } from "lucide-react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface EvaluationWithDetails {
   id: string;
@@ -43,6 +44,7 @@ interface EvaluationWithDetails {
 
 export default function ReviewerEvaluations() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [evaluations, setEvaluations] = useState<EvaluationWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEval, setSelectedEval] = useState<EvaluationWithDetails | null>(null);
@@ -113,10 +115,10 @@ export default function ReviewerEvaluations() {
       "for_further_review": "bg-warning/10 text-warning",
     };
     const labels: Record<string, string> = {
-      "highly_recommended": "Highly Recommended",
-      "recommended": "Recommended",
-      "not_recommended": "Not Recommended",
-      "for_further_review": "For Further Review",
+      "highly_recommended": t("highly_recommended"),
+      "recommended": t("recommended"),
+      "not_recommended": t("not_recommended"),
+      "for_further_review": t("for_further_review"),
     };
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[rec] || ""}`}>
@@ -129,37 +131,37 @@ export default function ReviewerEvaluations() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">My Evaluations</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t("my_evaluations_page_title")}</h1>
           <p className="text-muted-foreground mt-1">
-            View and manage your submitted evaluations
+            {t("view_manage_submitted_evaluations")}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Submitted Evaluations</CardTitle>
+            <CardTitle>{t("submitted_evaluations")}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="text-center py-8 text-muted-foreground">
-                Loading evaluations...
+                {t("loading_evaluations")}
               </div>
             ) : evaluations.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                You haven't submitted any evaluations yet.
+                {t("no_evaluations_submitted")}
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Reference No.</TableHead>
-                      <TableHead>Applicant</TableHead>
-                      <TableHead>Position</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead>Recommendation</TableHead>
-                      <TableHead>Evaluated On</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("reference_no")}</TableHead>
+                      <TableHead>{t("applicant")}</TableHead>
+                      <TableHead>{t("position")}</TableHead>
+                      <TableHead>{t("score_label")}</TableHead>
+                      <TableHead>{t("recommendation_label")}</TableHead>
+                      <TableHead>{t("evaluated_on_label")}</TableHead>
+                      <TableHead className="text-right">{t("actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -177,7 +179,7 @@ export default function ReviewerEvaluations() {
                         </TableCell>
                         <TableCell>
                           <span className={`font-bold ${getScoreColor(evaluation.score)}`}>
-                            {evaluation.score !== null ? `${evaluation.score}%` : "N/A"}
+                            {evaluation.score !== null ? `${evaluation.score}%` : t("no_score")}
                           </span>
                         </TableCell>
                         <TableCell>
@@ -212,28 +214,28 @@ export default function ReviewerEvaluations() {
       <Dialog open={showDetail} onOpenChange={setShowDetail}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Evaluation Details</DialogTitle>
+            <DialogTitle>{t("evaluation_details")}</DialogTitle>
           </DialogHeader>
           {selectedEval && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Reference Number</p>
+                  <p className="text-sm text-muted-foreground">{t("reference_number_label")}</p>
                   <p className="font-mono">{selectedEval.application?.reference_number}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Position</p>
+                  <p className="text-sm text-muted-foreground">{t("position_label")}</p>
                   <p>{selectedEval.application?.vacancy?.position_title}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Applicant</p>
+                  <p className="text-sm text-muted-foreground">{t("applicant_label")}</p>
                   <p>
                     {selectedEval.application?.profile?.first_name}{" "}
                     {selectedEval.application?.profile?.last_name}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Evaluated On</p>
+                  <p className="text-sm text-muted-foreground">{t("evaluated_on_label")}</p>
                   <p>{format(new Date(selectedEval.created_at), "MMMM d, yyyy")}</p>
                 </div>
               </div>
@@ -242,16 +244,16 @@ export default function ReviewerEvaluations() {
                 <div className="flex items-center gap-2 mb-4">
                   <Star className="h-5 w-5 text-warning" />
                   <span className="text-2xl font-bold">
-                    {selectedEval.score !== null ? `${selectedEval.score}%` : "No Score"}
+                    {selectedEval.score !== null ? `${selectedEval.score}%` : t("no_score")}
                   </span>
                 </div>
                 <div className="mb-4">
-                  <p className="text-sm text-muted-foreground mb-1">Recommendation</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("recommendation_label")}</p>
                   {getRecommendationBadge(selectedEval.recommendation)}
                 </div>
                 {selectedEval.remarks && (
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Remarks</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t("remarks")}</p>
                     <p className="text-sm bg-muted p-3 rounded-lg">{selectedEval.remarks}</p>
                   </div>
                 )}

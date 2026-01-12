@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ClipboardList, CheckCircle, Clock, FileText } from "lucide-react";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 export default function ReviewerDashboard() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [stats, setStats] = useState({
     assigned: 0,
     evaluated: 0,
@@ -52,19 +54,19 @@ export default function ReviewerDashboard() {
 
   const statCards = [
     {
-      title: "Assigned Applications",
+      title: t("assigned_applications"),
       value: stats.assigned,
       icon: ClipboardList,
       color: "text-primary",
     },
     {
-      title: "Pending Review",
+      title: t("pending_review_reviewer"),
       value: stats.pending,
       icon: Clock,
       color: "text-warning",
     },
     {
-      title: "Evaluated",
+      title: t("evaluated"),
       value: stats.evaluated,
       icon: CheckCircle,
       color: "text-success",
@@ -75,9 +77,9 @@ export default function ReviewerDashboard() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Reviewer Dashboard</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t("reviewer_dashboard")}</h1>
           <p className="text-muted-foreground mt-1">
-            Review and evaluate assigned applications
+            {t("review_evaluate_assigned_applications")}
           </p>
         </div>
 
@@ -103,7 +105,7 @@ export default function ReviewerDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Quick Actions
+              {t("quick_actions")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -114,9 +116,9 @@ export default function ReviewerDashboard() {
               >
                 <ClipboardList className="h-8 w-8 text-primary" />
                 <div>
-                  <h3 className="font-semibold">View Assigned Applications</h3>
+                  <h3 className="font-semibold">{t("view_assigned_applications")}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Review and evaluate applications assigned to you
+                    {t("view_assigned_applications_desc")}
                   </p>
                 </div>
               </a>
@@ -126,9 +128,9 @@ export default function ReviewerDashboard() {
               >
                 <CheckCircle className="h-8 w-8 text-success" />
                 <div>
-                  <h3 className="font-semibold">My Evaluations</h3>
+                  <h3 className="font-semibold">{t("my_evaluations")}</h3>
                   <p className="text-sm text-muted-foreground">
-                    View and manage your submitted evaluations
+                    {t("my_evaluations_desc")}
                   </p>
                 </div>
               </a>

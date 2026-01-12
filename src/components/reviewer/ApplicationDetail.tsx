@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { Download, FileText, Briefcase, GraduationCap, User } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface ApplicationDetailProps {
   application: Tables<"applications"> & {
@@ -19,6 +20,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
   const [experience, setExperience] = useState<Tables<"work_experience">[]>([]);
   const [documents, setDocuments] = useState<Tables<"documents">[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   useEffect(() => {
     fetchApplicantData();
@@ -86,7 +88,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading applicant data...</div>;
+    return <div className="text-center py-8">{t("loading_applicant_data")}</div>;
   }
 
   return (
@@ -94,50 +96,50 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="profile" className="flex items-center gap-1">
           <User className="h-4 w-4" />
-          Profile
+          {t("profile")}
         </TabsTrigger>
         <TabsTrigger value="education" className="flex items-center gap-1">
           <GraduationCap className="h-4 w-4" />
-          Education
+          {t("education")}
         </TabsTrigger>
         <TabsTrigger value="experience" className="flex items-center gap-1">
           <Briefcase className="h-4 w-4" />
-          Experience
+          {t("experience")}
         </TabsTrigger>
         <TabsTrigger value="documents" className="flex items-center gap-1">
           <FileText className="h-4 w-4" />
-          Documents
+          {t("documents")}
         </TabsTrigger>
       </TabsList>
 
       <TabsContent value="profile" className="mt-4">
         <Card>
           <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle>{t("personal_information_title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-muted-foreground">Full Name</p>
+                <p className="text-sm text-muted-foreground">{t("full_name_label")}</p>
                 <p className="font-medium">
                   {application.profile?.first_name} {application.profile?.middle_name}{" "}
                   {application.profile?.last_name} {application.profile?.suffix}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="text-sm text-muted-foreground">{t("email_label")}</p>
                 <p className="font-medium">{application.profile?.email}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Contact Number</p>
+                <p className="text-sm text-muted-foreground">{t("contact_number_label")}</p>
                 <p className="font-medium">
-                  {application.profile?.contact_number || "Not provided"}
+                  {application.profile?.contact_number || t("not_provided")}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Address</p>
+                <p className="text-sm text-muted-foreground">{t("address_label_long")}</p>
                 <p className="font-medium">
-                  {application.profile?.address || "Not provided"}
+                  {application.profile?.address || t("not_provided")}
                 </p>
               </div>
             </div>
@@ -148,12 +150,12 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       <TabsContent value="education" className="mt-4">
         <Card>
           <CardHeader>
-            <CardTitle>Educational Background</CardTitle>
+            <CardTitle>{t("educational_background_title")}</CardTitle>
           </CardHeader>
           <CardContent>
             {education.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">
-                No educational background provided
+                {t("no_educational_background_provided")}
               </p>
             ) : (
               <div className="space-y-4">
@@ -166,7 +168,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                       <div>
                         <h4 className="font-semibold">{edu.school_name}</h4>
                         <p className="text-sm text-muted-foreground">
-                          {edu.level} {edu.degree && `- ${edu.degree}`}
+                          {t(edu.level.toLowerCase().replace(/ /g, '_'))} {edu.degree && `- ${edu.degree}`}
                         </p>
                         {edu.field_of_study && (
                           <p className="text-sm">{edu.field_of_study}</p>
@@ -176,7 +178,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                         )}
                       </div>
                       <span className="text-sm text-muted-foreground">
-                        {edu.year_graduated || "In Progress"}
+                        {edu.year_graduated || t("in_progress")}
                       </span>
                     </div>
                   </div>
@@ -190,12 +192,12 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       <TabsContent value="experience" className="mt-4">
         <Card>
           <CardHeader>
-            <CardTitle>Work Experience</CardTitle>
+            <CardTitle>{t("work_experience_title")}</CardTitle>
           </CardHeader>
           <CardContent>
             {experience.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">
-                No work experience provided
+                {t("no_work_experience_provided")}
               </p>
             ) : (
               <div className="space-y-4">
@@ -218,7 +220,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                         <p>
                           {format(new Date(exp.start_date), "MMM yyyy")} -{" "}
                           {exp.is_current
-                            ? "Present"
+                            ? t("present")
                             : exp.end_date
                             ? format(new Date(exp.end_date), "MMM yyyy")
                             : ""}
@@ -239,12 +241,12 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
       <TabsContent value="documents" className="mt-4">
         <Card>
           <CardHeader>
-            <CardTitle>Submitted Documents</CardTitle>
+            <CardTitle>{t("submitted_documents_title")}</CardTitle>
           </CardHeader>
           <CardContent>
             {documents.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">
-                No documents attached to this application
+                {t("no_documents_attached_to_application")}
               </p>
             ) : (
               <div className="space-y-2">
@@ -261,7 +263,7 @@ export function ApplicationDetail({ application }: ApplicationDetailProps) {
                           {doc.document_type} •{" "}
                           {doc.file_size
                             ? `${(doc.file_size / 1024).toFixed(1)} KB`
-                            : "Unknown size"}
+                            : t("unknown_size")}
                         </p>
                       </div>
                     </div>

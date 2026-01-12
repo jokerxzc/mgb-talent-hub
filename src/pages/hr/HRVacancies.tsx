@@ -36,6 +36,7 @@ import { format } from "date-fns";
 import { Plus, Search, Edit, Trash2, Eye, Users } from "lucide-react";
 import { EMPLOYMENT_TYPES, DOCUMENT_TYPES } from "@/lib/constants";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 type Vacancy = Tables<"vacancies">;
 
@@ -43,6 +44,7 @@ export default function HRVacancies() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [search, setSearch] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingVacancy, setEditingVacancy] = useState<Vacancy | null>(null);
@@ -70,10 +72,10 @@ export default function HRVacancies() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hr-vacancies"] });
       setIsCreateOpen(false);
-      toast({ title: "Vacancy created successfully" });
+      toast({ title: t("vacancy_created_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error creating vacancy", description: error.message, variant: "destructive" });
+      toast({ title: t("error_creating_vacancy"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -88,10 +90,10 @@ export default function HRVacancies() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hr-vacancies"] });
       setEditingVacancy(null);
-      toast({ title: "Vacancy updated successfully" });
+      toast({ title: t("vacancy_updated_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error updating vacancy", description: error.message, variant: "destructive" });
+      toast({ title: t("error_updating_vacancy"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -102,10 +104,10 @@ export default function HRVacancies() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hr-vacancies"] });
-      toast({ title: "Vacancy deleted successfully" });
+      toast({ title: t("vacancy_deleted_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error deleting vacancy", description: error.message, variant: "destructive" });
+      toast({ title: t("error_deleting_vacancy"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -119,19 +121,19 @@ export default function HRVacancies() {
       <div className="animate-fade-in space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Vacancy Management</h1>
-            <p className="text-muted-foreground">Create and manage job postings</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("vacancy_management")}</h1>
+            <p className="text-muted-foreground">{t("create_manage_job_postings")}</p>
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                New Vacancy
+                {t("new_vacancy")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Create New Vacancy</DialogTitle>
+                <DialogTitle>{t("create_new_vacancy")}</DialogTitle>
               </DialogHeader>
               <VacancyForm
                 onSubmit={(data) => createMutation.mutate(data)}
@@ -147,7 +149,7 @@ export default function HRVacancies() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search vacancies..."
+                  placeholder={t("search_vacancies")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9"
@@ -157,18 +159,18 @@ export default function HRVacancies() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              <div className="text-center py-8 text-muted-foreground">{t("loading")}</div>
             ) : filteredVacancies && filteredVacancies.length > 0 ? (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Position</TableHead>
-                      <TableHead>Office/Division</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Deadline</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("position")}</TableHead>
+                      <TableHead>{t("office_division")}</TableHead>
+                      <TableHead>{t("type")}</TableHead>
+                      <TableHead>{t("deadline")}</TableHead>
+                      <TableHead>{t("status")}</TableHead>
+                      <TableHead className="text-right">{t("actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -198,7 +200,7 @@ export default function HRVacancies() {
                               variant="ghost"
                               size="icon"
                               onClick={() => {
-                                if (confirm("Are you sure you want to delete this vacancy?")) {
+                                if (confirm(t("confirm_delete_vacancy"))) {
                                   deleteMutation.mutate(vacancy.id);
                                 }
                               }}
@@ -214,7 +216,7 @@ export default function HRVacancies() {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                No vacancies found. Create your first vacancy to get started.
+                {t("no_vacancies_found_create_first")}
               </div>
             )}
           </CardContent>
@@ -224,7 +226,7 @@ export default function HRVacancies() {
         <Dialog open={!!editingVacancy} onOpenChange={() => setEditingVacancy(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Edit Vacancy</DialogTitle>
+              <DialogTitle>{t("edit_vacancy")}</DialogTitle>
             </DialogHeader>
             {editingVacancy && (
               <VacancyForm
@@ -247,6 +249,7 @@ interface VacancyFormProps {
 }
 
 function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
+  const { t } = useTranslation(); // Initialize useTranslation
   const [formData, setFormData] = useState({
     position_title: initialData?.position_title || "",
     office_division: initialData?.office_division || "",
@@ -290,7 +293,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="position_title">Position Title *</Label>
+          <Label htmlFor="position_title">{t("position_title")} *</Label>
           <Input
             id="position_title"
             value={formData.position_title}
@@ -299,7 +302,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="office_division">Office/Division *</Label>
+          <Label htmlFor="office_division">{t("office_division")} *</Label>
           <Input
             id="office_division"
             value={formData.office_division}
@@ -311,7 +314,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
 
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="employment_type">Employment Type *</Label>
+          <Label htmlFor="employment_type">{t("employment_type")} *</Label>
           <Select
             value={formData.employment_type}
             onValueChange={(value) => setFormData({ ...formData, employment_type: value as "permanent" | "cos" | "jo" })}
@@ -329,7 +332,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="salary_grade">Salary Grade</Label>
+          <Label htmlFor="salary_grade">{t("salary_grade")}</Label>
           <Input
             id="salary_grade"
             value={formData.salary_grade}
@@ -338,7 +341,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="daily_rate">Daily Rate (₱)</Label>
+          <Label htmlFor="daily_rate">{t("daily_rate")}</Label>
           <Input
             id="daily_rate"
             type="number"
@@ -351,7 +354,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
 
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="slots">Number of Slots</Label>
+          <Label htmlFor="slots">{t("slots")}</Label>
           <Input
             id="slots"
             type="number"
@@ -361,7 +364,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="place_of_assignment">Place of Assignment</Label>
+          <Label htmlFor="place_of_assignment">{t("place_of_assignment")}</Label>
           <Input
             id="place_of_assignment"
             value={formData.place_of_assignment}
@@ -369,7 +372,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="application_deadline">Application Deadline *</Label>
+          <Label htmlFor="application_deadline">{t("application_deadline")} *</Label>
           <Input
             id="application_deadline"
             type="date"
@@ -381,7 +384,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Job Description</Label>
+        <Label htmlFor="description">{t("job_description")}</Label>
         <Textarea
           id="description"
           value={formData.description}
@@ -392,7 +395,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="qualification_education">Education Requirements</Label>
+          <Label htmlFor="qualification_education">{t("education_requirements")}</Label>
           <Textarea
             id="qualification_education"
             value={formData.qualification_education}
@@ -401,7 +404,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="qualification_experience">Experience Requirements</Label>
+          <Label htmlFor="qualification_experience">{t("experience_requirements")}</Label>
           <Textarea
             id="qualification_experience"
             value={formData.qualification_experience}
@@ -413,7 +416,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="qualification_training">Training Requirements</Label>
+          <Label htmlFor="qualification_training">{t("training_requirements")}</Label>
           <Textarea
             id="qualification_training"
             value={formData.qualification_training}
@@ -422,7 +425,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="qualification_eligibility">Eligibility Requirements</Label>
+          <Label htmlFor="qualification_eligibility">{t("eligibility_requirements")}</Label>
           <Textarea
             id="qualification_eligibility"
             value={formData.qualification_eligibility}
@@ -433,7 +436,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label>Required Documents</Label>
+        <Label>{t("required_documents")}</Label>
         <div className="grid sm:grid-cols-2 gap-2">
           {Object.entries(DOCUMENT_TYPES).map(([key, label]) => (
             <label key={key} className="flex items-center gap-2 cursor-pointer">
@@ -450,7 +453,7 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
+        <Label htmlFor="status">{t("status")}</Label>
         <Select
           value={formData.status}
           onValueChange={(value) => setFormData({ ...formData, status: value as "draft" | "published" | "closed" | "archived" })}
@@ -459,17 +462,17 @@ function VacancyForm({ initialData, onSubmit, isLoading }: VacancyFormProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
+            <SelectItem value="draft">{t("status_draft")}</SelectItem>
+            <SelectItem value="published">{t("status_published")}</SelectItem>
+            <SelectItem value="closed">{t("status_closed")}</SelectItem>
+            <SelectItem value="archived">{t("status_archived")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : initialData ? "Update Vacancy" : "Create Vacancy"}
+          {isLoading ? t("saving") : initialData ? t("update_vacancy") : t("create_vacancy")}
         </Button>
       </div>
     </form>

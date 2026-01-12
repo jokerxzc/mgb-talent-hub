@@ -9,17 +9,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, LayoutDashboard, FileText, Briefcase, Menu, X, ChevronRight } from "lucide-react";
+import { User, LogOut, LayoutDashboard, FileText, Briefcase, Menu, X, ChevronRight, Globe } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ROUTES } from "@/lib/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 export function MainHeader() {
   const { user, role, signOut, isHRAdmin, isReviewer } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t, i18n } = useTranslation(); // Initialize useTranslation
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -53,9 +55,13 @@ export function MainHeader() {
   const isActive = (path: string) => location.pathname === path;
 
   const navLinks = [
-    { path: ROUTES.HOME, label: "Home" },
-    { path: ROUTES.VACANCIES, label: "Job Vacancies" },
+    { path: ROUTES.HOME, label: t("home") },
+    { path: ROUTES.VACANCIES, label: t("job_vacancies") },
   ];
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -71,9 +77,9 @@ export function MainHeader() {
             </motion.div>
             <div className="hidden sm:block">
               <p className="font-semibold text-foreground leading-tight group-hover:text-primary transition-colors">
-                MGB Region 2
+                {t("mgb_region_2")}
               </p>
-              <p className="text-xs text-muted-foreground">Online Job Application System</p>
+              <p className="text-xs text-muted-foreground">{t("online_job_application_system")}</p>
             </div>
           </Link>
 
@@ -104,12 +110,30 @@ export function MainHeader() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          {/* Language Switcher */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Globe className="h-5 w-5" />
+                <span className="sr-only">Change language</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => changeLanguage("en")} className={cn(i18n.language === "en" && "bg-muted font-medium")}>
+                English
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeLanguage("fil")} className={cn(i18n.language === "fil" && "bg-muted font-medium")}>
+                Filipino
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
                   <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">My Account</span>
+                  <span className="hidden sm:inline">{t("my_account")}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -117,41 +141,41 @@ export function MainHeader() {
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{user.email}</span>
                     <span className="text-xs text-muted-foreground capitalize">
-                      {role?.replace("_", " ") || "Applicant"}
+                      {role === "hr_admin" ? t("hr_administrator") : role === "reviewer" ? t("reviewer") : t("applicant")}
                     </span>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate(getDashboardRoute())}>
                   <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Dashboard
+                  {t("dashboard")}
                 </DropdownMenuItem>
                 {!isHRAdmin && !isReviewer && (
                   <>
                     <DropdownMenuItem onClick={() => navigate(ROUTES.APPLICANT_APPLICATIONS)}>
                       <FileText className="mr-2 h-4 w-4" />
-                      My Applications
+                      {t("my_applications")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate(ROUTES.APPLICANT_PROFILE)}>
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      {t("profile")}
                     </DropdownMenuItem>
                   </>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
+                  {t("sign_out")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="hidden sm:flex items-center gap-2">
               <Button variant="ghost" size="sm" asChild>
-                <Link to={ROUTES.AUTH}>Sign In</Link>
+                <Link to={ROUTES.AUTH}>{t("sign_in")}</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link to={`${ROUTES.AUTH}?mode=register`}>Register</Link>
+                <Link to={`${ROUTES.AUTH}?mode=register`}>{t("register")}</Link>
               </Button>
             </div>
           )}
@@ -249,10 +273,10 @@ export function MainHeader() {
                     className="space-y-2 px-4"
                   >
                     <Button asChild className="w-full" size="lg">
-                      <Link to={`${ROUTES.AUTH}?mode=register`}>Register</Link>
+                      <Link to={`${ROUTES.AUTH}?mode=register`}>{t("register")}</Link>
                     </Button>
                     <Button asChild variant="outline" className="w-full" size="lg">
-                      <Link to={ROUTES.AUTH}>Sign In</Link>
+                      <Link to={ROUTES.AUTH}>{t("sign_in")}</Link>
                     </Button>
                   </motion.div>
                 )}
@@ -268,7 +292,7 @@ export function MainHeader() {
                     <div className="px-4 py-2">
                       <p className="text-sm font-medium">{user.email}</p>
                       <p className="text-xs text-muted-foreground capitalize">
-                        {role?.replace("_", " ") || "Applicant"}
+                        {role === "hr_admin" ? t("hr_administrator") : role === "reviewer" ? t("reviewer") : t("applicant")}
                       </p>
                     </div>
                     <Link
@@ -278,7 +302,7 @@ export function MainHeader() {
                     >
                       <span className="flex items-center gap-2">
                         <LayoutDashboard className="h-4 w-4" />
-                        Dashboard
+                        {t("dashboard")}
                       </span>
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </Link>
@@ -291,7 +315,7 @@ export function MainHeader() {
                         >
                           <span className="flex items-center gap-2">
                             <FileText className="h-4 w-4" />
-                            My Applications
+                            {t("my_applications")}
                           </span>
                           <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </Link>
@@ -302,7 +326,7 @@ export function MainHeader() {
                         >
                           <span className="flex items-center gap-2">
                             <User className="h-4 w-4" />
-                            Profile
+                            {t("profile")}
                           </span>
                           <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </Link>
@@ -313,7 +337,7 @@ export function MainHeader() {
                       className="flex items-center w-full px-4 py-3 rounded-lg text-base font-medium text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-                      Sign Out
+                      {t("sign_out")}
                     </button>
                   </motion.div>
                 )}

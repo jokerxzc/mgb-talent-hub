@@ -35,6 +35,7 @@ import { format } from "date-fns";
 import { Search, Eye, FileText, Download } from "lucide-react";
 import { APPLICATION_STATUS } from "@/lib/constants";
 import type { Tables, Enums } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 type ApplicationStatus = Enums<"application_status">;
 
@@ -47,6 +48,7 @@ export default function HRApplications() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedApplication, setSelectedApplication] = useState<ApplicationWithDetails | null>(null);
@@ -113,24 +115,24 @@ export default function HRApplications() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hr-applications"] });
-      toast({ title: "Application status updated" });
+      toast({ title: t("application_status_updated") });
     },
     onError: (error) => {
-      toast({ title: "Error updating status", description: error.message, variant: "destructive" });
+      toast({ title: t("error_updating_status"), description: error.message, variant: "destructive" });
     },
   });
 
   const filteredApplications = applications?.filter((app) => {
-    const matchesSearch =
-      app.reference_number.toLowerCase().includes(search.toLowerCase()) ||
-      app.vacancy?.position_title.toLowerCase().includes(search.toLowerCase()) ||
-      `${app.profile?.first_name} ${app.profile?.last_name}`.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const searchLower = search.toLowerCase();
+    return (
+      app.reference_number.toLowerCase().includes(searchLower) ||
+      app.vacancy?.position_title.toLowerCase().includes(searchLower) ||
+      `${app.profile?.first_name} ${app.profile?.last_name}`.toLowerCase().includes(searchLower)
+    );
   });
 
   const getApplicantName = (profile: Tables<"profiles"> | null) => {
-    if (!profile) return "Unknown";
+    if (!profile) return t("unknown");
     return `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || profile.email;
   };
 
@@ -138,8 +140,8 @@ export default function HRApplications() {
     <DashboardLayout>
       <div className="animate-fade-in space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Applications</h1>
-          <p className="text-muted-foreground">Review and manage job applications</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("applications_hr")}</h1>
+          <p className="text-muted-foreground">{t("review_manage_job_applications")}</p>
         </div>
 
         <Card>
@@ -148,7 +150,7 @@ export default function HRApplications() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by reference number, position, or applicant..."
+                  placeholder={t("search_applications")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9"
@@ -156,10 +158,10 @@ export default function HRApplications() {
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue placeholder={t("filter_by_status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="all">{t("all_status")}</SelectItem>
                   {Object.entries(APPLICATION_STATUS).map(([key, label]) => (
                     <SelectItem key={key} value={key}>
                       {label}
@@ -171,18 +173,18 @@ export default function HRApplications() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              <div className="text-center py-8 text-muted-foreground">{t("loading")}</div>
             ) : filteredApplications && filteredApplications.length > 0 ? (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Reference #</TableHead>
-                      <TableHead>Applicant</TableHead>
-                      <TableHead>Position</TableHead>
-                      <TableHead>Submitted</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("reference_number")}</TableHead>
+                      <TableHead>{t("applicant")}</TableHead>
+                      <TableHead>{t("position")}</TableHead>
+                      <TableHead>{t("submitted")}</TableHead>
+                      <TableHead>{t("status")}</TableHead>
+                      <TableHead className="text-right">{t("actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -213,7 +215,7 @@ export default function HRApplications() {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                No applications found
+                {t("no_applications_found")}
               </div>
             )}
           </CardContent>
@@ -223,50 +225,50 @@ export default function HRApplications() {
         <Dialog open={!!selectedApplication} onOpenChange={() => setSelectedApplication(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Application Details</DialogTitle>
+              <DialogTitle>{t("application_details")}</DialogTitle>
             </DialogHeader>
             {selectedApplication && (
               <div className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-muted-foreground text-xs">Reference Number</Label>
+                    <Label className="text-muted-foreground text-xs">{t("reference_number_label")}</Label>
                     <p className="font-mono">{selectedApplication.reference_number}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground text-xs">Status</Label>
+                    <Label className="text-muted-foreground text-xs">{t("status")}</Label>
                     <div className="mt-1">
                       <StatusBadge status={selectedApplication.status || "submitted"} type="application" />
                     </div>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground text-xs">Applicant</Label>
+                    <Label className="text-muted-foreground text-xs">{t("applicant_label")}</Label>
                     <p>{getApplicantName(selectedApplication.profile)}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground text-xs">Email</Label>
+                    <Label className="text-muted-foreground text-xs">{t("email")}</Label>
                     <p>{selectedApplication.profile?.email}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground text-xs">Position</Label>
+                    <Label className="text-muted-foreground text-xs">{t("position_label")}</Label>
                     <p>{selectedApplication.vacancy?.position_title}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground text-xs">Office/Division</Label>
+                    <Label className="text-muted-foreground text-xs">{t("office_division_label")}</Label>
                     <p>{selectedApplication.vacancy?.office_division}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground text-xs">Submitted</Label>
+                    <Label className="text-muted-foreground text-xs">{t("submitted")}</Label>
                     <p>{format(new Date(selectedApplication.submitted_at), "MMMM d, yyyy h:mm a")}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground text-xs">Contact</Label>
-                    <p>{selectedApplication.profile?.contact_number || "Not provided"}</p>
+                    <Label className="text-muted-foreground text-xs">{t("contact")}</Label>
+                    <p>{selectedApplication.profile?.contact_number || t("not_provided")}</p>
                   </div>
                 </div>
 
                 {/* Documents */}
                 <div>
-                  <Label className="text-muted-foreground text-xs">Submitted Documents</Label>
+                  <Label className="text-muted-foreground text-xs">{t("submitted_documents")}</Label>
                   <div className="mt-2 space-y-2">
                     {applicationDocuments && applicationDocuments.length > 0 ? (
                       applicationDocuments.map((doc) => (
@@ -284,14 +286,14 @@ export default function HRApplications() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-muted-foreground">No documents attached</p>
+                      <p className="text-sm text-muted-foreground">{t("no_documents_attached")}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Update Status */}
                 <div className="border-t pt-4">
-                  <Label>Update Status</Label>
+                  <Label>{t("update_status")}</Label>
                   <div className="flex gap-2 mt-2 flex-wrap">
                     {Object.entries(APPLICATION_STATUS).map(([key, label]) => (
                       <Button

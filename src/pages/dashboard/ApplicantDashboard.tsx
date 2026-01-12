@@ -21,6 +21,7 @@ import {
   FolderOpen,
   Target
 } from "lucide-react";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -39,6 +40,7 @@ const itemVariants = {
 
 export default function ApplicantDashboard() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const { data: stats } = useQuery({
     queryKey: ["applicant-stats", user?.id],
@@ -85,7 +87,7 @@ export default function ApplicantDashboard() {
       const { count } = await supabase
         .from("documents")
         .select("id", { count: "exact", head: true })
-        .eq("user!.id");
+        .eq("user_id", user!.id); // Corrected user!.id
       return count || 0;
     },
   });
@@ -113,37 +115,37 @@ export default function ApplicantDashboard() {
 
   const statCards = [
     {
-      title: "My Applications",
+      title: t("my_applications"),
       value: stats?.total || 0,
-      subtitle: "Total submitted",
+      subtitle: t("total_submitted"),
       icon: FileText,
       color: "text-primary",
       bgColor: "bg-primary/10",
     },
     {
-      title: "Under Review",
+      title: t("under_review"),
       value: stats?.underReview || 0,
-      subtitle: "Being processed",
+      subtitle: t("being_processed"),
       icon: Clock,
       color: "text-warning",
       bgColor: "bg-warning/10",
     },
     {
-      title: "Shortlisted",
+      title: t("shortlisted"),
       value: stats?.shortlisted || 0,
-      subtitle: "For interview",
+      subtitle: t("for_interview"),
       icon: Target,
       color: "text-accent",
       bgColor: "bg-accent/10",
     },
     {
-      title: "Open Positions",
+      title: t("open_positions"),
       value: stats?.openPositions || 0,
-      subtitle: "Available now",
+      subtitle: t("available_now"),
       icon: Briefcase,
       color: "text-success",
       bgColor: "bg-success/10",
-      action: { label: "Browse Jobs", to: ROUTES.VACANCIES },
+      action: { label: t("browse_jobs"), to: ROUTES.VACANCIES },
     },
   ];
 
@@ -171,16 +173,16 @@ export default function ApplicantDashboard() {
         <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Welcome back{profile?.first_name ? `, ${profile.first_name}` : ""}! 👋
+              {t("welcome_back")}{profile?.first_name ? `, ${profile.first_name}` : ""}! 👋
             </h1>
             <p className="text-muted-foreground mt-1">
-              Track your applications and discover new opportunities
+              {t("track_applications_discover_opportunities")}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">AI Assistant Available</span>
+              <span className="text-sm font-medium">{t("ai_assistant_available")}</span>
             </div>
           </div>
         </motion.div>
@@ -196,9 +198,9 @@ export default function ApplicantDashboard() {
                       <TrendingUp className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Complete Your Profile</h3>
+                      <h3 className="font-semibold">{t("complete_your_profile")}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {completionPercentage}/3 steps completed
+                        {t("steps_completed", { count: completionPercentage })}
                       </p>
                     </div>
                   </div>
@@ -218,7 +220,7 @@ export default function ApplicantDashboard() {
                     <Button size="sm" variant="secondary" asChild>
                       <Link to={ROUTES.APPLICANT_PROFILE}>
                         <User className="h-3 w-3 mr-1" />
-                        Complete Profile
+                        {t("complete_profile")}
                       </Link>
                     </Button>
                   )}
@@ -226,7 +228,7 @@ export default function ApplicantDashboard() {
                     <Button size="sm" variant="secondary" asChild>
                       <Link to={ROUTES.APPLICANT_DOCUMENTS}>
                         <FolderOpen className="h-3 w-3 mr-1" />
-                        Upload Documents
+                        {t("upload_documents")}
                       </Link>
                     </Button>
                   )}
@@ -234,7 +236,7 @@ export default function ApplicantDashboard() {
                     <Button size="sm" variant="secondary" asChild>
                       <Link to={ROUTES.VACANCIES}>
                         <Briefcase className="h-3 w-3 mr-1" />
-                        Apply for Jobs
+                        {t("apply_for_jobs")}
                       </Link>
                     </Button>
                   )}
@@ -283,13 +285,13 @@ export default function ApplicantDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-lg">Recent Applications</CardTitle>
-                <CardDescription>Your latest job applications</CardDescription>
+                <CardTitle className="text-lg">{t("recent_applications")}</CardTitle>
+                <CardDescription>{t("your_latest_job_applications")}</CardDescription>
               </div>
               {(stats?.total || 0) > 0 && (
                 <Button variant="outline" size="sm" asChild>
                   <Link to={ROUTES.APPLICANT_APPLICATIONS}>
-                    View All
+                    {t("view_all")}
                     <ArrowRight className="h-3 w-3 ml-1" />
                   </Link>
                 </Button>
@@ -311,7 +313,7 @@ export default function ApplicantDashboard() {
                         </div>
                         <div>
                           <p className="font-medium text-sm">
-                            {app.vacancies?.position_title || "Position"}
+                            {app.vacancies?.position_title || t("position")}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {app.reference_number} • {app.vacancies?.office_division}
@@ -319,7 +321,7 @@ export default function ApplicantDashboard() {
                         </div>
                       </div>
                       <Badge className={`${getStatusColor(app.status)} border`}>
-                        {app.status?.replace("_", " ")}
+                        {t(`status_${app.status}`)}
                       </Badge>
                     </motion.div>
                   ))}
@@ -329,11 +331,11 @@ export default function ApplicantDashboard() {
                   <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
                     <FileText className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <p className="text-muted-foreground mb-4">No applications yet</p>
+                  <p className="text-muted-foreground mb-4">{t("no_applications_yet")}</p>
                   <Button asChild>
                     <Link to={ROUTES.VACANCIES}>
                       <Briefcase className="h-4 w-4 mr-2" />
-                      Browse Open Positions
+                      {t("browse_open_positions")}
                     </Link>
                   </Button>
                 </div>
@@ -346,32 +348,32 @@ export default function ApplicantDashboard() {
         <motion.div variants={itemVariants}>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">How It Works</CardTitle>
-              <CardDescription>Follow these steps to apply for positions</CardDescription>
+              <CardTitle className="text-lg">{t("how_it_works")}</CardTitle>
+              <CardDescription>{t("follow_steps_to_apply")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid sm:grid-cols-3 gap-6">
                 {[
                   {
                     step: 1,
-                    title: "Complete Profile",
-                    description: "Add your personal info, education, and work experience",
+                    title: t("complete_profile"),
+                    description: t("complete_profile_desc"),
                     icon: User,
                     done: isProfileComplete,
                     link: ROUTES.APPLICANT_PROFILE,
                   },
                   {
                     step: 2,
-                    title: "Upload Documents",
-                    description: "Prepare your PDS, resume, and required certificates",
+                    title: t("upload_documents"),
+                    description: t("upload_documents_desc"),
                     icon: FolderOpen,
                     done: hasDocuments,
                     link: ROUTES.APPLICANT_DOCUMENTS,
                   },
                   {
                     step: 3,
-                    title: "Apply for Jobs",
-                    description: "Browse vacancies and submit your applications",
+                    title: t("apply_for_jobs"),
+                    description: t("apply_desc"),
                     icon: Target,
                     done: (stats?.total || 0) > 0,
                     link: ROUTES.VACANCIES,
@@ -402,7 +404,7 @@ export default function ApplicantDashboard() {
                     {!item.done && (
                       <Button variant="outline" size="sm" className="w-full" asChild>
                         <Link to={item.link}>
-                          Get Started
+                          {t("get_started")}
                           <ArrowRight className="h-3 w-3 ml-1" />
                         </Link>
                       </Button>

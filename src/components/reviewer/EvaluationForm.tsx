@@ -26,13 +26,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const evaluationSchema = z.object({
   score: z.coerce
     .number()
-    .min(0, "Score must be at least 0")
-    .max(100, "Score cannot exceed 100"),
-  recommendation: z.string().min(1, "Please select a recommendation"),
+    .min(0, "score_must_be_at_least_0")
+    .max(100, "score_cannot_exceed_100"),
+  recommendation: z.string().min(1, "please_select_recommendation"),
   remarks: z.string().optional(),
 });
 
@@ -50,6 +51,7 @@ interface EvaluationFormProps {
 export function EvaluationForm({ application, onComplete, onCancel }: EvaluationFormProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [loading, setLoading] = useState(false);
   const [existingEvaluation, setExistingEvaluation] = useState<Tables<"evaluations"> | null>(null);
 
@@ -104,8 +106,8 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
         if (error) throw error;
 
         toast({
-          title: "Evaluation Updated",
-          description: "Your evaluation has been updated successfully.",
+          title: t("evaluation_updated"),
+          description: t("evaluation_updated_successfully"),
         });
       } else {
         // Create new evaluation
@@ -120,8 +122,8 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
         if (error) throw error;
 
         toast({
-          title: "Evaluation Submitted",
-          description: "Your evaluation has been submitted successfully.",
+          title: t("evaluation_submitted"),
+          description: t("evaluation_submitted_successfully"),
         });
       }
 
@@ -129,8 +131,8 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
     } catch (error: any) {
       console.error("Error saving evaluation:", error);
       toast({
-        title: "Error",
-        description: error.message || "Failed to save evaluation.",
+        title: t("error"),
+        description: error.message || t("failed_to_save_evaluation"),
         variant: "destructive",
       });
     } finally {
@@ -144,21 +146,21 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
       <div className="bg-muted p-4 rounded-lg">
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-muted-foreground">Reference Number</p>
+            <p className="text-muted-foreground">{t("reference_number_label")}</p>
             <p className="font-mono font-medium">{application.reference_number}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Position</p>
+            <p className="text-muted-foreground">{t("position_label")}</p>
             <p className="font-medium">{application.vacancy?.position_title}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Applicant</p>
+            <p className="text-muted-foreground">{t("applicant_label")}</p>
             <p className="font-medium">
               {application.profile?.first_name} {application.profile?.last_name}
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground">Office/Division</p>
+            <p className="text-muted-foreground">{t("office_division_label")}</p>
             <p className="font-medium">{application.vacancy?.office_division}</p>
           </div>
         </div>
@@ -171,13 +173,13 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
             name="score"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Score (0-100)</FormLabel>
+                <FormLabel>{t("score")} (0-100)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     min="0"
                     max="100"
-                    placeholder="Enter score"
+                    placeholder={t("enter_score")}
                     {...field}
                   />
                 </FormControl>
@@ -191,18 +193,18 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
             name="recommendation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Recommendation</FormLabel>
+                <FormLabel>{t("recommendation")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select recommendation" />
+                      <SelectValue placeholder={t("select_recommendation")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="highly_recommended">Highly Recommended</SelectItem>
-                    <SelectItem value="recommended">Recommended</SelectItem>
-                    <SelectItem value="for_further_review">For Further Review</SelectItem>
-                    <SelectItem value="not_recommended">Not Recommended</SelectItem>
+                    <SelectItem value="highly_recommended">{t("highly_recommended")}</SelectItem>
+                    <SelectItem value="recommended">{t("recommended")}</SelectItem>
+                    <SelectItem value="for_further_review">{t("for_further_review")}</SelectItem>
+                    <SelectItem value="not_recommended">{t("not_recommended")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -215,10 +217,10 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
             name="remarks"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Remarks (Optional)</FormLabel>
+                <FormLabel>{t("remarks_optional")}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Enter additional remarks or observations..."
+                    placeholder={t("enter_additional_remarks")}
                     rows={4}
                     {...field}
                   />
@@ -230,11 +232,11 @@ export function EvaluationForm({ application, onComplete, onCancel }: Evaluation
 
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {existingEvaluation ? "Update Evaluation" : "Submit Evaluation"}
+              {existingEvaluation ? t("update_evaluation") : t("submit_evaluation")}
             </Button>
           </div>
         </form>

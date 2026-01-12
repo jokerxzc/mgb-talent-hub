@@ -25,6 +25,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { EMPLOYMENT_TYPES, DOCUMENT_TYPES, ROUTES } from "@/lib/constants";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 export default function VacancyDetail() {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +33,7 @@ export default function VacancyDetail() {
   const { user, isApplicant } = useAuth();
   const { toast } = useToast();
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const { data: vacancy, isLoading } = useQuery({
     queryKey: ["vacancy", id],
@@ -99,8 +101,8 @@ export default function VacancyDetail() {
 
   const handleApplicationSuccess = (referenceNumber: string) => {
     toast({
-      title: "Application Submitted!",
-      description: `Your reference number is ${referenceNumber}`,
+      title: t("application_submitted"),
+      description: t("your_reference_number_is", { referenceNumber }),
     });
     navigate(ROUTES.APPLICANT_APPLICATIONS);
   };
@@ -108,7 +110,7 @@ export default function VacancyDetail() {
   if (isLoading) {
     return (
       <PublicLayout>
-        <div className="container py-8 text-center text-muted-foreground">Loading...</div>
+        <div className="container py-8 text-center text-muted-foreground">{t("loading")}</div>
       </PublicLayout>
     );
   }
@@ -117,9 +119,9 @@ export default function VacancyDetail() {
     return (
       <PublicLayout>
         <div className="container py-8 text-center">
-          <h2 className="text-xl font-medium mb-4">Vacancy not found</h2>
+          <h2 className="text-xl font-medium mb-4">{t("vacancy_not_found")}</h2>
           <Button asChild>
-            <Link to={ROUTES.VACANCIES}>Back to Vacancies</Link>
+            <Link to={ROUTES.VACANCIES}>{t("back_to_vacancies")}</Link>
           </Button>
         </div>
       </PublicLayout>
@@ -134,7 +136,7 @@ export default function VacancyDetail() {
       <div className="container py-8 max-w-4xl">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          {t("back")}
         </Button>
 
         <div className="space-y-6">
@@ -164,32 +166,32 @@ export default function VacancyDetail() {
 
               <div className="grid sm:grid-cols-4 gap-4 mt-6 pt-6 border-t">
                 <div>
-                  <p className="text-xs text-muted-foreground">Employment Type</p>
+                  <p className="text-xs text-muted-foreground">{t("employment_type_label")}</p>
                   <p className="font-medium">
                     {EMPLOYMENT_TYPES[vacancy.employment_type as keyof typeof EMPLOYMENT_TYPES]}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">
-                    {vacancy.employment_type === "permanent" ? "Salary Grade" : "Daily Rate"}
+                    {vacancy.employment_type === "permanent" ? t("salary_grade_label_short") : t("daily_rate_label")}
                   </p>
                   <p className="font-medium">
                     {vacancy.employment_type === "permanent"
-                      ? vacancy.salary_grade || "Not specified"
+                      ? vacancy.salary_grade || t("not_specified")
                       : vacancy.daily_rate
                       ? `₱${vacancy.daily_rate.toLocaleString()}`
-                      : "Not specified"}
+                      : t("not_specified")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Slots Available</p>
+                  <p className="text-xs text-muted-foreground">{t("slots_available")}</p>
                   <p className="font-medium flex items-center gap-1">
                     <Users className="h-4 w-4" />
-                    {vacancy.slots}
+                    {vacancy.slots} slot{vacancy.slots > 1 ? "s" : ""}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Deadline</p>
+                  <p className="text-xs text-muted-foreground">{t("deadline")}</p>
                   <p className={`font-medium flex items-center gap-1 ${isDeadlinePassed ? "text-destructive" : ""}`}>
                     <Calendar className="h-4 w-4" />
                     {format(new Date(vacancy.application_deadline), "MMM d, yyyy")}
@@ -219,27 +221,27 @@ export default function VacancyDetail() {
                 {existingApplication ? (
                   <div className="flex items-center gap-2 text-primary">
                     <CheckCircle className="h-5 w-5" />
-                    <span>You have already applied for this position</span>
+                    <span>{t("you_have_already_applied")}</span>
                   </div>
                 ) : isDeadlinePassed ? (
-                  <p className="text-destructive">Application deadline has passed</p>
+                  <p className="text-destructive">{t("application_deadline_passed")}</p>
                 ) : user ? (
                   isApplicant ? (
                     <Button size="lg" onClick={() => setIsApplyDialogOpen(true)}>
                       <FileText className="h-4 w-4 mr-2" />
-                      Apply Now
+                      {t("apply_now")}
                     </Button>
                   ) : (
-                    <p className="text-muted-foreground">Only applicants can apply for positions</p>
+                    <p className="text-muted-foreground">{t("only_applicants_can_apply_for_positions")}</p>
                   )
                 ) : (
                   <div className="flex items-center gap-4">
                     <Button size="lg" asChild>
-                      <Link to={ROUTES.AUTH}>Sign In to Apply</Link>
+                      <Link to={ROUTES.AUTH}>{t("sign_in_to_apply")}</Link>
                     </Button>
-                    <span className="text-muted-foreground">or</span>
+                    <span className="text-muted-foreground">{t("or")}</span>
                     <Button variant="outline" asChild>
-                      <Link to={ROUTES.AUTH}>Create Account</Link>
+                      <Link to={ROUTES.AUTH}>{t("create_account_button")}</Link>
                     </Button>
                   </div>
                 )}
@@ -251,7 +253,7 @@ export default function VacancyDetail() {
           {vacancy.description && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Job Description</CardTitle>
+                <CardTitle className="text-base">{t("job_description_title")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="whitespace-pre-wrap">{vacancy.description}</p>
@@ -262,14 +264,14 @@ export default function VacancyDetail() {
           {/* Qualifications */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Qualification Standards</CardTitle>
+              <CardTitle className="text-base">{t("qualification_standards")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {vacancy.qualification_education && (
                 <div className="flex gap-3">
                   <GraduationCap className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Education</p>
+                    <p className="font-medium text-sm">{t("education")}</p>
                     <p className="text-muted-foreground">{vacancy.qualification_education}</p>
                   </div>
                 </div>
@@ -278,7 +280,7 @@ export default function VacancyDetail() {
                 <div className="flex gap-3">
                   <Briefcase className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Experience</p>
+                    <p className="font-medium text-sm">{t("experience")}</p>
                     <p className="text-muted-foreground">{vacancy.qualification_experience}</p>
                   </div>
                 </div>
@@ -287,7 +289,7 @@ export default function VacancyDetail() {
                 <div className="flex gap-3">
                   <Award className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Training</p>
+                    <p className="font-medium text-sm">{t("training")}</p>
                     <p className="text-muted-foreground">{vacancy.qualification_training}</p>
                   </div>
                 </div>
@@ -296,7 +298,7 @@ export default function VacancyDetail() {
                 <div className="flex gap-3">
                   <ClipboardCheck className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Eligibility</p>
+                    <p className="font-medium text-sm">{t("eligibility")}</p>
                     <p className="text-muted-foreground">{vacancy.qualification_eligibility}</p>
                   </div>
                 </div>
@@ -305,7 +307,7 @@ export default function VacancyDetail() {
                 !vacancy.qualification_experience &&
                 !vacancy.qualification_training &&
                 !vacancy.qualification_eligibility && (
-                  <p className="text-muted-foreground">No specific qualifications listed</p>
+                  <p className="text-muted-foreground">{t("no_specific_qualifications")}</p>
                 )}
             </CardContent>
           </Card>
@@ -314,7 +316,7 @@ export default function VacancyDetail() {
           {requiredDocs.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Required Documents</CardTitle>
+                <CardTitle className="text-base">{t("required_documents_title")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">

@@ -27,9 +27,11 @@ import { format } from "date-fns";
 import { Plus, Edit, Trash2, GraduationCap, Briefcase, User } from "lucide-react";
 import { EDUCATION_LEVELS } from "@/lib/constants";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 export default function Profile() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // Initialize useTranslation
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -79,8 +81,8 @@ export default function Profile() {
     <DashboardLayout>
       <div className="animate-fade-in space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">My Profile</h1>
-          <p className="text-muted-foreground">Manage your personal information</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("my_profile")}</h1>
+          <p className="text-muted-foreground">{t("manage_personal_information")}</p>
         </div>
 
         {/* Personal Information */}
@@ -99,6 +101,7 @@ export default function Profile() {
 function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> | null | undefined; isLoading: boolean }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     first_name: "",
@@ -120,10 +123,10 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       setIsEditing(false);
-      toast({ title: "Profile updated successfully" });
+      toast({ title: t("profile_updated_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error updating profile", description: error.message, variant: "destructive" });
+      toast({ title: t("error_updating_profile"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -147,7 +150,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
   };
 
   if (isLoading) {
-    return <Card><CardContent className="py-8 text-center text-muted-foreground">Loading...</CardContent></Card>;
+    return <Card><CardContent className="py-8 text-center text-muted-foreground">{t("loading_profile")}</CardContent></Card>;
   }
 
   return (
@@ -155,12 +158,12 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <User className="h-5 w-5" />
-          Personal Information
+          {t("personal_information")}
         </CardTitle>
         {!isEditing && (
           <Button variant="outline" size="sm" onClick={handleEdit}>
             <Edit className="h-4 w-4 mr-2" />
-            Edit
+            {t("edit_button")}
           </Button>
         )}
       </CardHeader>
@@ -169,7 +172,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name">{t("first_name")}</Label>
                 <Input
                   id="first_name"
                   value={formData.first_name}
@@ -177,7 +180,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="middle_name">Middle Name</Label>
+                <Label htmlFor="middle_name">{t("middle_name")}</Label>
                 <Input
                   id="middle_name"
                   value={formData.middle_name}
@@ -185,7 +188,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name">{t("last_name")}</Label>
                 <Input
                   id="last_name"
                   value={formData.last_name}
@@ -195,7 +198,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="suffix">Suffix</Label>
+                <Label htmlFor="suffix">{t("suffix")}</Label>
                 <Input
                   id="suffix"
                   value={formData.suffix}
@@ -204,7 +207,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="contact_number">Contact Number</Label>
+                <Label htmlFor="contact_number">{t("contact_number")}</Label>
                 <Input
                   id="contact_number"
                   value={formData.contact_number}
@@ -213,7 +216,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{t("address_label")}</Label>
               <Textarea
                 id="address"
                 value={formData.address}
@@ -223,30 +226,30 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
             </div>
             <div className="flex gap-2">
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateMutation.isPending ? t("saving_changes") : t("save_changes")}
               </Button>
               <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                Cancel
+                {t("cancel")}
               </Button>
             </div>
           </form>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <Label className="text-muted-foreground text-xs">Full Name</Label>
-              <p>{`${profile?.first_name || ""} ${profile?.middle_name || ""} ${profile?.last_name || ""} ${profile?.suffix || ""}`.trim() || "Not set"}</p>
+              <Label className="text-muted-foreground text-xs">{t("full_name")}</Label>
+              <p>{`${profile?.first_name || ""} ${profile?.middle_name || ""} ${profile?.last_name || ""} ${profile?.suffix || ""}`.trim() || t("not_set")}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground text-xs">Email</Label>
+              <Label className="text-muted-foreground text-xs">{t("email")}</Label>
               <p>{profile?.email}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground text-xs">Contact Number</Label>
-              <p>{profile?.contact_number || "Not set"}</p>
+              <Label className="text-muted-foreground text-xs">{t("contact_number")}</Label>
+              <p>{profile?.contact_number || t("not_set")}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground text-xs">Address</Label>
-              <p>{profile?.address || "Not set"}</p>
+              <Label className="text-muted-foreground text-xs">{t("address_label_long")}</Label>
+              <p>{profile?.address || t("not_set")}</p>
             </div>
           </div>
         )}
@@ -258,6 +261,7 @@ function PersonalInfoCard({ profile, isLoading }: { profile: Tables<"profiles"> 
 function EducationCard({ education, userId }: { education: Tables<"educational_background">[]; userId: string }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -293,10 +297,10 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
       queryClient.invalidateQueries({ queryKey: ["education"] });
       setIsDialogOpen(false);
       resetForm();
-      toast({ title: "Education added successfully" });
+      toast({ title: t("education_added_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error adding education", description: error.message, variant: "destructive" });
+      toast({ title: t("error_adding_education"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -309,10 +313,10 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
       queryClient.invalidateQueries({ queryKey: ["education"] });
       setIsDialogOpen(false);
       resetForm();
-      toast({ title: "Education updated successfully" });
+      toast({ title: t("education_updated_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error updating education", description: error.message, variant: "destructive" });
+      toast({ title: t("error_updating_education"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -323,10 +327,10 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["education"] });
-      toast({ title: "Education deleted successfully" });
+      toast({ title: t("education_deleted_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error deleting education", description: error.message, variant: "destructive" });
+      toast({ title: t("error_deleting_education"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -361,35 +365,35 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <GraduationCap className="h-5 w-5" />
-          Educational Background
+          {t("educational_background")}
         </CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Add
+              {t("add_button")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit Education" : "Add Education"}</DialogTitle>
+              <DialogTitle>{editingId ? t("edit_education") : t("add_education")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="level">Level *</Label>
+                <Label htmlFor="level">{t("level")} *</Label>
                 <Select value={formData.level} onValueChange={(value) => setFormData({ ...formData, level: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
+                    <SelectValue placeholder={t("select_level")} />
                   </SelectTrigger>
                   <SelectContent>
                     {EDUCATION_LEVELS.map((level) => (
-                      <SelectItem key={level} value={level}>{level}</SelectItem>
+                      <SelectItem key={level} value={level}>{t(level.toLowerCase().replace(/ /g, '_'))}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="school_name">School Name *</Label>
+                <Label htmlFor="school_name">{t("school_name")} *</Label>
                 <Input
                   id="school_name"
                   value={formData.school_name}
@@ -399,7 +403,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="degree">Degree/Course</Label>
+                  <Label htmlFor="degree">{t("degree_course")}</Label>
                   <Input
                     id="degree"
                     value={formData.degree}
@@ -407,7 +411,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="field_of_study">Field of Study</Label>
+                  <Label htmlFor="field_of_study">{t("field_of_study")}</Label>
                   <Input
                     id="field_of_study"
                     value={formData.field_of_study}
@@ -417,7 +421,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="year_graduated">Year Graduated</Label>
+                  <Label htmlFor="year_graduated">{t("year_graduated")}</Label>
                   <Input
                     id="year_graduated"
                     type="number"
@@ -426,7 +430,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="honors">Honors/Awards</Label>
+                  <Label htmlFor="honors">{t("honors_awards")}</Label>
                   <Input
                     id="honors"
                     value={formData.honors}
@@ -435,7 +439,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
                 </div>
               </div>
               <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
-                {createMutation.isPending || updateMutation.isPending ? "Saving..." : editingId ? "Update" : "Add Education"}
+                {createMutation.isPending || updateMutation.isPending ? t("saving") : editingId ? t("update") : t("add_education")}
               </Button>
             </form>
           </DialogContent>
@@ -449,10 +453,10 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
                 <div>
                   <p className="font-medium">{item.school_name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {item.level} {item.degree && `- ${item.degree}`}
+                    {t(item.level.toLowerCase().replace(/ /g, '_'))} {item.degree && `- ${item.degree}`}
                   </p>
                   {item.year_graduated && (
-                    <p className="text-xs text-muted-foreground">Graduated: {item.year_graduated}</p>
+                    <p className="text-xs text-muted-foreground">{t("graduated")}: {item.year_graduated}</p>
                   )}
                 </div>
                 <div className="flex gap-1">
@@ -463,7 +467,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      if (confirm("Delete this education record?")) deleteMutation.mutate(item.id);
+                      if (confirm(t("delete_education_record_confirm"))) deleteMutation.mutate(item.id);
                     }}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
@@ -473,7 +477,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-center py-4">No education records added yet</p>
+          <p className="text-muted-foreground text-center py-4">{t("no_education_records")}</p>
         )}
       </CardContent>
     </Card>
@@ -483,6 +487,7 @@ function EducationCard({ education, userId }: { education: Tables<"educational_b
 function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables<"work_experience">[]; userId: string }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -522,10 +527,10 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
       queryClient.invalidateQueries({ queryKey: ["work-experience"] });
       setIsDialogOpen(false);
       resetForm();
-      toast({ title: "Work experience added successfully" });
+      toast({ title: t("work_experience_added_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error adding work experience", description: error.message, variant: "destructive" });
+      toast({ title: t("error_adding_work_experience"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -538,10 +543,10 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
       queryClient.invalidateQueries({ queryKey: ["work-experience"] });
       setIsDialogOpen(false);
       resetForm();
-      toast({ title: "Work experience updated successfully" });
+      toast({ title: t("work_experience_updated_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error updating work experience", description: error.message, variant: "destructive" });
+      toast({ title: t("error_updating_work_experience"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -552,10 +557,10 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["work-experience"] });
-      toast({ title: "Work experience deleted successfully" });
+      toast({ title: t("work_experience_deleted_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error deleting work experience", description: error.message, variant: "destructive" });
+      toast({ title: t("error_deleting_work_experience"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -593,22 +598,22 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <Briefcase className="h-5 w-5" />
-          Work Experience
+          {t("work_experience")}
         </CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Add
+              {t("add_button")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit Work Experience" : "Add Work Experience"}</DialogTitle>
+              <DialogTitle>{editingId ? t("edit_work_experience") : t("add_work_experience")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="position_title">Position Title *</Label>
+                <Label htmlFor="position_title">{t("position_title_label")} *</Label>
                 <Input
                   id="position_title"
                   value={formData.position_title}
@@ -617,7 +622,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="company_name">Company/Organization *</Label>
+                <Label htmlFor="company_name">{t("company_organization")} *</Label>
                 <Input
                   id="company_name"
                   value={formData.company_name}
@@ -627,7 +632,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="start_date">Start Date *</Label>
+                  <Label htmlFor="start_date">{t("start_date")} *</Label>
                   <Input
                     id="start_date"
                     type="date"
@@ -637,7 +642,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="end_date">End Date</Label>
+                  <Label htmlFor="end_date">{t("end_date")}</Label>
                   <Input
                     id="end_date"
                     type="date"
@@ -654,11 +659,11 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                   onChange={(e) => setFormData({ ...formData, is_current: e.target.checked })}
                   className="rounded"
                 />
-                <span className="text-sm">Currently working here</span>
+                <span className="text-sm">{t("currently_working_here")}</span>
               </label>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="monthly_salary">Monthly Salary (₱)</Label>
+                  <Label htmlFor="monthly_salary">{t("monthly_salary")}</Label>
                   <Input
                     id="monthly_salary"
                     type="number"
@@ -667,7 +672,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="salary_grade">Salary Grade</Label>
+                  <Label htmlFor="salary_grade">{t("salary_grade_label")}</Label>
                   <Input
                     id="salary_grade"
                     value={formData.salary_grade}
@@ -677,7 +682,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="duties">Duties and Responsibilities</Label>
+                <Label htmlFor="duties">{t("duties_responsibilities")}</Label>
                 <Textarea
                   id="duties"
                   value={formData.duties}
@@ -686,7 +691,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                 />
               </div>
               <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
-                {createMutation.isPending || updateMutation.isPending ? "Saving..." : editingId ? "Update" : "Add Experience"}
+                {createMutation.isPending || updateMutation.isPending ? t("saving") : editingId ? t("update") : t("add_work_experience")}
               </Button>
             </form>
           </DialogContent>
@@ -701,7 +706,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                   <p className="font-medium">{item.position_title}</p>
                   <p className="text-sm text-muted-foreground">{item.company_name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {format(new Date(item.start_date), "MMM yyyy")} - {item.is_current ? "Present" : item.end_date ? format(new Date(item.end_date), "MMM yyyy") : ""}
+                    {format(new Date(item.start_date), "MMM yyyy")} - {item.is_current ? t("present") : item.end_date ? format(new Date(item.end_date), "MMM yyyy") : ""}
                   </p>
                 </div>
                 <div className="flex gap-1">
@@ -712,7 +717,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      if (confirm("Delete this work experience?")) deleteMutation.mutate(item.id);
+                      if (confirm(t("delete_work_experience_confirm"))) deleteMutation.mutate(item.id);
                     }}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
@@ -722,7 +727,7 @@ function WorkExperienceCard({ workExperience, userId }: { workExperience: Tables
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-center py-4">No work experience added yet</p>
+          <p className="text-muted-foreground text-center py-4">{t("no_work_experience_records")}</p>
         )}
       </CardContent>
     </Card>

@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface Vacancy {
   id: string;
@@ -51,6 +52,7 @@ export default function Vacancies() {
   const [officeFilter, setOfficeFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(false);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   useEffect(() => {
     fetchVacancies();
@@ -146,11 +148,11 @@ export default function Vacancies() {
           className="mb-8"
         >
           <Badge variant="outline" className="mb-3 text-primary border-primary">
-            Careers
+            {t("opportunities")}
           </Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Job Vacancies</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">{t("job_vacancies")}</h1>
           <p className="text-muted-foreground">
-            Browse available positions at the Mines and Geosciences Bureau
+            {t("explore_current_openings")}
           </p>
         </motion.div>
 
@@ -166,7 +168,7 @@ export default function Vacancies() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by position, office, or location..."
+                placeholder={t("search_by_position_office_location")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
@@ -179,7 +181,7 @@ export default function Vacancies() {
                 className="gap-2"
               >
                 <SlidersHorizontal className="h-4 w-4" />
-                Filters
+                {t("filters")}
                 {activeFiltersCount > 0 && (
                   <Badge className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
                     {activeFiltersCount}
@@ -188,12 +190,12 @@ export default function Vacancies() {
               </Button>
               <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
                 <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Sort by" />
+                  <SelectValue placeholder={t("sort_by")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="deadline">Deadline</SelectItem>
-                  <SelectItem value="title">Title A-Z</SelectItem>
+                  <SelectItem value="newest">{t("newest")}</SelectItem>
+                  <SelectItem value="deadline">{t("deadline_sort")}</SelectItem>
+                  <SelectItem value="title">{t("title_a_z")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -212,27 +214,27 @@ export default function Vacancies() {
                   <CardContent className="pt-4">
                     <div className="flex flex-col sm:flex-row gap-4">
                       <div className="flex-1">
-                        <label className="text-sm font-medium mb-1.5 block">Employment Type</label>
+                        <label className="text-sm font-medium mb-1.5 block">{t("employment_type")}</label>
                         <Select value={employmentFilter} onValueChange={setEmploymentFilter}>
                           <SelectTrigger>
-                            <SelectValue placeholder="All types" />
+                            <SelectValue placeholder={t("all_types")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Types</SelectItem>
-                            <SelectItem value="permanent">Permanent</SelectItem>
-                            <SelectItem value="cos">Contract of Service (COS)</SelectItem>
-                            <SelectItem value="jo">Job Order (JO)</SelectItem>
+                            <SelectItem value="all">{t("all_types")}</SelectItem>
+                            <SelectItem value="permanent">{t("permanent")}</SelectItem>
+                            <SelectItem value="cos">{t("contract_of_service_cos")}</SelectItem>
+                            <SelectItem value="jo">{t("job_order_jo")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="flex-1">
-                        <label className="text-sm font-medium mb-1.5 block">Office/Division</label>
+                        <label className="text-sm font-medium mb-1.5 block">{t("office_division")}</label>
                         <Select value={officeFilter} onValueChange={setOfficeFilter}>
                           <SelectTrigger>
-                            <SelectValue placeholder="All offices" />
+                            <SelectValue placeholder={t("all_offices")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Offices</SelectItem>
+                            <SelectItem value="all">{t("all_offices")}</SelectItem>
                             {uniqueOffices.map((office) => (
                               <SelectItem key={office} value={office}>
                                 {office}
@@ -244,7 +246,7 @@ export default function Vacancies() {
                       <div className="flex items-end">
                         <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1">
                           <X className="h-4 w-4" />
-                          Clear
+                          {t("clear")}
                         </Button>
                       </div>
                     </div>
@@ -257,11 +259,11 @@ export default function Vacancies() {
           {/* Results count */}
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>
-              Showing {filteredVacancies.length} of {vacancies.length} positions
+              {t("showing_positions", { filteredCount: filteredVacancies.length, totalCount: vacancies.length })}
             </span>
             {(search || activeFiltersCount > 0) && (
               <Button variant="link" size="sm" onClick={clearFilters} className="text-muted-foreground p-0 h-auto">
-                Clear all filters
+                {t("clear_all_filters")}
               </Button>
             )}
           </div>
@@ -280,15 +282,15 @@ export default function Vacancies() {
             <Card className="text-center py-16 border-dashed">
               <CardContent>
                 <Briefcase className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No vacancies found</h3>
+                <h3 className="text-lg font-semibold mb-2">{t("no_vacancies_found")}</h3>
                 <p className="text-muted-foreground mb-4">
                   {search || activeFiltersCount > 0
-                    ? "Try adjusting your search or filters"
-                    : "Check back later for new openings"}
+                    ? t("try_adjusting_search")
+                    : t("check_back_later_for_new_openings")}
                 </p>
                 {(search || activeFiltersCount > 0) && (
                   <Button variant="outline" onClick={clearFilters}>
-                    Clear Filters
+                    {t("clear_filters")}
                   </Button>
                 )}
               </CardContent>
@@ -345,14 +347,14 @@ export default function Vacancies() {
                         </div>
                         <div className="flex items-center gap-4 shrink-0">
                           <div className="text-right hidden sm:block">
-                            <div className="text-xs text-muted-foreground">Deadline</div>
+                            <div className="text-xs text-muted-foreground">{t("deadline")}</div>
                             <div className="text-sm font-medium flex items-center gap-1">
                               <Calendar className="h-3.5 w-3.5" />
                               {format(new Date(vacancy.application_deadline), "MMM dd, yyyy")}
                             </div>
                           </div>
                           <Button asChild>
-                            <Link to={`/vacancies/${vacancy.id}`}>View Details</Link>
+                            <Link to={`/vacancies/${vacancy.id}`}>{t("view_details")}</Link>
                           </Button>
                         </div>
                       </div>

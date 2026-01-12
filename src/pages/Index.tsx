@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface Vacancy {
   id: string;
@@ -50,6 +51,8 @@ const staggerContainer = {
 };
 
 const Index = () => {
+  const { t } = useTranslation(); // Initialize useTranslation
+
   const { data: vacancies, isLoading } = useQuery({
     queryKey: ["featured-vacancies"],
     queryFn: async () => {
@@ -81,17 +84,17 @@ const Index = () => {
   });
 
   const applicationSteps = [
-    { icon: UserPlus, title: "Create Account", description: "Register with your email" },
-    { icon: FileText, title: "Complete Profile", description: "Add your qualifications" },
-    { icon: Upload, title: "Upload Documents", description: "Submit required files" },
-    { icon: Send, title: "Apply", description: "Submit your application" },
+    { icon: UserPlus, title: t("create_account"), description: t("register_with_email") },
+    { icon: FileText, title: t("complete_profile"), description: t("complete_profile_desc") },
+    { icon: Upload, title: t("upload_documents"), description: t("upload_documents_desc") },
+    { icon: Send, title: t("apply"), description: t("apply_desc") },
   ];
 
   const benefits = [
-    { icon: Shield, title: "Job Security", description: "Stable government employment with career protection" },
-    { icon: GraduationCap, title: "Career Growth", description: "Professional development and training opportunities" },
-    { icon: CheckCircle2, title: "Competitive Benefits", description: "Health, retirement, and other government benefits" },
-    { icon: Clock, title: "Work-Life Balance", description: "Structured work hours and leave benefits" },
+    { icon: Shield, title: t("job_security"), description: t("job_security_desc") },
+    { icon: GraduationCap, title: t("career_growth"), description: t("career_growth_desc") },
+    { icon: CheckCircle2, title: t("competitive_benefits"), description: t("competitive_benefits_desc") },
+    { icon: Clock, title: t("work_life_balance"), description: t("work_life_balance_desc") },
   ];
 
   const getEmploymentTypeBadge = (type: string) => {
@@ -101,9 +104,9 @@ const Index = () => {
       jo: "bg-warning/15 text-warning border-warning/30",
     };
     const labels: Record<string, string> = {
-      permanent: "Permanent",
-      cos: "COS",
-      jo: "Job Order",
+      permanent: t("permanent"),
+      cos: t("contract_of_service_cos"),
+      jo: t("job_order_jo"),
     };
     return (
       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${styles[type] || styles.permanent}`}>
@@ -146,7 +149,7 @@ const Index = () => {
                 transition={{ delay: 0.2 }}
               >
                 <Badge className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-3 py-1">
-                  Now Hiring
+                  {t("now_hiring")}
                 </Badge>
               </motion.div>
               <motion.h1 
@@ -155,7 +158,7 @@ const Index = () => {
                 transition={{ delay: 0.3 }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
               >
-                Build Your Career at <span className="text-accent">MGB Region 2</span>
+                {t("build_your_career_at")} <span className="text-accent">{t("mgb_region_2")}</span>
               </motion.h1>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
@@ -163,8 +166,7 @@ const Index = () => {
                 transition={{ delay: 0.4 }}
                 className="text-lg md:text-xl text-primary-foreground/85 max-w-xl"
               >
-                Join the Mines and Geosciences Bureau Region 2 and contribute to the sustainable 
-                development of the Philippines' mineral resources in the Cagayan Valley region.
+                {t("join_mgb_region_2_desc")}
               </motion.p>
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -175,7 +177,7 @@ const Index = () => {
                 <Button asChild size="lg" variant="secondary" className="text-base font-semibold shadow-lg hover:scale-105 transition-transform">
                   <Link to="/vacancies">
                     <Briefcase className="mr-2 h-5 w-5" />
-                    View Open Positions
+                    {t("view_open_positions")}
                   </Link>
                 </Button>
                 <Button 
@@ -185,7 +187,7 @@ const Index = () => {
                   className="text-base border-2 border-primary-foreground/30 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:scale-105 transition-transform"
                 >
                   <Link to="/auth">
-                    Sign In
+                    {t("sign_in")}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
@@ -200,10 +202,10 @@ const Index = () => {
               className="grid grid-cols-2 gap-4"
             >
               {[
-                { icon: Briefcase, value: stats?.activePositions || 0, label: "Open Positions" },
-                { icon: Users, value: stats?.totalApplications || 0, label: "Applications" },
-                { icon: Building2, value: 16, label: "Regional Offices" }, // Assuming this is a general stat, could be updated if Region 2 specific
-                { icon: MapPin, value: "1,000+", label: "Employees" }, // Assuming this is a general stat, could be updated if Region 2 specific
+                { icon: Briefcase, value: stats?.activePositions || 0, label: t("open_positions") },
+                { icon: Users, value: stats?.totalApplications || 0, label: t("applications") },
+                { icon: Building2, value: 16, label: t("regional_offices") }, // Assuming this is a general stat, could be updated if Region 2 specific
+                { icon: MapPin, value: "1,000+", label: t("employees") }, // Assuming this is a general stat, could be updated if Region 2 specific
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -275,14 +277,14 @@ const Index = () => {
           >
             <div>
               <Badge variant="outline" className="mb-3 text-primary border-primary">
-                Opportunities
+                {t("opportunities")}
               </Badge>
-              <h2 className="text-2xl md:text-3xl font-bold">Featured Vacancies</h2>
-              <p className="text-muted-foreground mt-1">Explore current openings across all offices in Region 2</p>
+              <h2 className="text-2xl md:text-3xl font-bold">{t("featured_vacancies")}</h2>
+              <p className="text-muted-foreground mt-1">{t("explore_current_openings")}</p>
             </div>
             <Button asChild variant="outline" className="hover:scale-105 transition-transform">
               <Link to="/vacancies">
-                View All
+                {t("view_all")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -342,7 +344,7 @@ const Index = () => {
                         <div className="flex items-center gap-4 shrink-0">
                           {vacancy.application_deadline && (
                             <div className="text-right hidden sm:block">
-                              <div className="text-xs text-muted-foreground">Deadline</div>
+                              <div className="text-xs text-muted-foreground">{t("deadline")}</div>
                               <div className="text-sm font-medium flex items-center gap-1">
                                 <Calendar className="h-3.5 w-3.5" />
                                 {format(new Date(vacancy.application_deadline), "MMM dd, yyyy")}
@@ -351,7 +353,7 @@ const Index = () => {
                           )}
                           <Button asChild size="sm" className="shrink-0 hover:scale-105 transition-transform">
                             <Link to={`/vacancies/${vacancy.id}`}>
-                              View Details
+                              {t("view_details")}
                             </Link>
                           </Button>
                         </div>
@@ -365,8 +367,8 @@ const Index = () => {
             <Card className="border-dashed">
               <CardContent className="py-16 text-center">
                 <Briefcase className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-                <h3 className="font-semibold text-lg mb-1">No Vacancies Available</h3>
-                <p className="text-muted-foreground">Check back later for new opportunities.</p>
+                <h3 className="font-semibold text-lg mb-1">{t("no_vacancies_available")}</h3>
+                <p className="text-muted-foreground">{t("check_back_later_for_new_opportunities")}</p>
               </CardContent>
             </Card>
           )}
@@ -383,12 +385,11 @@ const Index = () => {
             className="text-center mb-12"
           >
             <Badge variant="outline" className="mb-3 text-primary border-primary">
-              Why Join Us
+              {t("why_join_us")}
             </Badge>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">A Career That Matters in Region 2</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t("a_career_that_matters_in_region_2")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Be part of the government agency responsible for managing the Cagayan Valley region's 
-              mineral resources and geosciences development.
+              {t("be_part_of_government_agency_desc")}
             </p>
           </motion.div>
 
@@ -432,7 +433,7 @@ const Index = () => {
           >
             <Button asChild size="lg" className="hover:scale-105 transition-transform">
               <Link to="/auth?mode=register">
-                Start Your Application
+                {t("start_your_application")}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -454,7 +455,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-2xl md:text-3xl font-bold mb-4"
           >
-            Ready to Make a Difference in Region 2?
+            {t("ready_to_make_a_difference")}
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -463,8 +464,7 @@ const Index = () => {
             transition={{ delay: 0.1 }}
             className="text-primary-foreground/80 max-w-2xl mx-auto mb-8"
           >
-            Join our team of dedicated professionals committed to the sustainable development 
-            of the Cagayan Valley region's natural resources.
+            {t("join_our_team_desc")}
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -476,7 +476,7 @@ const Index = () => {
             <Button asChild size="lg" variant="secondary" className="font-semibold hover:scale-105 transition-transform">
               <Link to="/vacancies">
                 <Briefcase className="mr-2 h-5 w-5" />
-                Browse Vacancies
+                {t("browse_vacancies")}
               </Link>
             </Button>
             <Button 
@@ -486,7 +486,7 @@ const Index = () => {
               className="border-2 border-primary-foreground/30 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:scale-105 transition-transform"
             >
               <Link to="/auth">
-                Create Account
+                {t("create_account_button")}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

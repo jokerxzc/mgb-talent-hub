@@ -58,4 +58,5 @@ export const ROUTES = {
   HR_USERS: "/hr/users",
   REVIEWER_DASHBOARD: "/reviewer",
   REVIEWER_APPLICATIONS: "/reviewer/applications",
+  REVIEWER_EVALUATIONS: "/reviewer/evaluations", // Added this route
 } as const;

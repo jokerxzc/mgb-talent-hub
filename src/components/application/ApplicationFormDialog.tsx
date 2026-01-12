@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { Upload, FileText, Check, AlertCircle, Loader2 } from "lucide-react";
 import { DOCUMENT_TYPES, FILE_SIZE_LIMIT } from "@/lib/constants";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 interface ApplicationFormDialogProps {
   open: boolean;
@@ -35,6 +36,7 @@ export function ApplicationFormDialog({
 }: ApplicationFormDialogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation(); // Initialize useTranslation
   
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("select");
@@ -74,11 +76,11 @@ export function ApplicationFormDialog({
 
   const handleFileSelect = (file: File) => {
     if (file.type !== "application/pdf") {
-      toast({ title: "Only PDF files are allowed", variant: "destructive" });
+      toast({ title: t("only_pdf_files_allowed"), variant: "destructive" });
       return;
     }
     if (file.size > FILE_SIZE_LIMIT) {
-      toast({ title: "File size must be less than 5MB", variant: "destructive" });
+      toast({ title: t("file_size_limit_exceeded"), variant: "destructive" });
       return;
     }
     setSelectedFile(file);
@@ -124,9 +126,9 @@ export function ApplicationFormDialog({
       setSelectedFile(null);
       setUploadDocType("");
       setActiveTab("select");
-      toast({ title: "Document uploaded successfully!" });
+      toast({ title: t("document_uploaded_successfully") });
     } catch (error: any) {
-      toast({ title: "Error uploading document", description: error.message, variant: "destructive" });
+      toast({ title: t("error_uploading_document"), description: error.message, variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -168,7 +170,7 @@ export function ApplicationFormDialog({
     },
     onError: (error) => {
       toast({
-        title: "Error submitting application",
+        title: t("error_submitting_application"),
         description: error.message,
         variant: "destructive",
       });
@@ -183,9 +185,9 @@ export function ApplicationFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-xl">Apply for {vacancy.position_title}</DialogTitle>
+          <DialogTitle className="text-xl">{t("apply_for")} {vacancy.position_title}</DialogTitle>
           <DialogDescription>
-            Select or upload the required documents to submit your application
+            {t("select_or_upload_documents")}
           </DialogDescription>
         </DialogHeader>
 
@@ -193,11 +195,11 @@ export function ApplicationFormDialog({
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="select" className="gap-2">
               <FileText className="h-4 w-4" />
-              Select Documents
+              {t("select_documents")}
             </TabsTrigger>
             <TabsTrigger value="upload" className="gap-2">
               <Upload className="h-4 w-4" />
-              Upload New
+              {t("upload_new")}
             </TabsTrigger>
           </TabsList>
 
@@ -223,7 +225,7 @@ export function ApplicationFormDialog({
                           <AlertCircle className="h-4 w-4 text-destructive" />
                         )}
                         {typeLabel}
-                        <span className="text-destructive">*</span>
+                        <span className="text-destructive">{t("required")}</span>
                       </Label>
                       
                       {docs.length > 0 ? (
@@ -245,7 +247,7 @@ export function ApplicationFormDialog({
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">{doc.file_name}</p>
                                 <p className="text-xs text-muted-foreground">
-                                  Uploaded {format(new Date(doc.uploaded_at), "MMM d, yyyy")}
+                                  {t("uploaded")} {format(new Date(doc.uploaded_at), "MMM d, yyyy")}
                                 </p>
                               </div>
                             </label>
@@ -255,7 +257,7 @@ export function ApplicationFormDialog({
                         <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
                           <p className="text-sm text-destructive flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
-                            No {typeLabel.toLowerCase()} uploaded yet
+                            {t("no_document_uploaded_yet", { type: typeLabel.toLowerCase() })}
                           </p>
                           <Button
                             variant="link"
@@ -266,7 +268,7 @@ export function ApplicationFormDialog({
                               setActiveTab("upload");
                             }}
                           >
-                            Upload now →
+                            {t("upload_now")} →
                           </Button>
                         </div>
                       )}
@@ -275,24 +277,24 @@ export function ApplicationFormDialog({
                 })
               ) : (
                 <p className="text-muted-foreground text-sm text-center py-4">
-                  No specific documents required for this position
+                  {t("no_specific_documents_required")}
                 </p>
               )}
             </TabsContent>
 
             <TabsContent value="upload" className="m-0 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="document_type">Document Type *</Label>
+                <Label htmlFor="document_type">{t("document_type")} *</Label>
                 <Select value={uploadDocType} onValueChange={setUploadDocType}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select document type" />
+                    <SelectValue placeholder={t("select_document_type")} />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(DOCUMENT_TYPES).map(([key, label]) => (
                       <SelectItem key={key} value={key}>
                         {label}
                         {missingDocTypes.includes(key) && (
-                          <span className="ml-2 text-destructive text-xs">(required)</span>
+                          <span className="ml-2 text-destructive text-xs">{t("required")}</span>
                         )}
                       </SelectItem>
                     ))}
@@ -301,7 +303,7 @@ export function ApplicationFormDialog({
               </div>
 
               <div className="space-y-2">
-                <Label>File (PDF only, max 5MB) *</Label>
+                <Label>{t("file_pdf_only_max_5mb")} *</Label>
                 <FileDropzone
                   selectedFile={selectedFile}
                   onFileSelect={handleFileSelect}
@@ -317,12 +319,12 @@ export function ApplicationFormDialog({
                 {uploading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Uploading...
+                    {t("uploading")}
                   </>
                 ) : (
                   <>
                     <Upload className="h-4 w-4 mr-2" />
-                    Upload & Add to Application
+                    {t("upload_add_to_application")}
                   </>
                 )}
               </Button>
@@ -333,7 +335,7 @@ export function ApplicationFormDialog({
         {/* Summary and Submit */}
         <div className="pt-4 border-t mt-4 space-y-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Documents selected:</span>
+            <span className="text-muted-foreground">{t("documents_selected")}</span>
             <span className="font-medium">{selectedDocuments.length}</span>
           </div>
           
@@ -342,7 +344,7 @@ export function ApplicationFormDialog({
               <p className="text-sm text-amber-800 dark:text-amber-200 flex items-start gap-2">
                 <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <span>
-                  Missing required documents:{" "}
+                  {t("missing_required_documents")}{" "}
                   {missingDocTypes.map((type) => DOCUMENT_TYPES[type as keyof typeof DOCUMENT_TYPES] || type).join(", ")}
                 </span>
               </p>
@@ -358,10 +360,10 @@ export function ApplicationFormDialog({
             {applyMutation.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Submitting Application...
+                {t("submitting_application")}
               </>
             ) : (
-              "Submit Application"
+              t("submit_application")
             )}
           </Button>
         </div>

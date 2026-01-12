@@ -26,11 +26,13 @@ import { format } from "date-fns";
 import { Upload, FileText, Trash2, Download } from "lucide-react";
 import { DOCUMENT_TYPES, FILE_SIZE_LIMIT } from "@/lib/constants";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 export default function Documents() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation(); // Initialize useTranslation
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [documentType, setDocumentType] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -52,11 +54,11 @@ export default function Documents() {
 
   const handleFileSelect = (file: File) => {
     if (file.type !== "application/pdf") {
-      toast({ title: "Only PDF files are allowed", variant: "destructive" });
+      toast({ title: t("only_pdf_files_allowed"), variant: "destructive" });
       return;
     }
     if (file.size > FILE_SIZE_LIMIT) {
-      toast({ title: "File size must be less than 5MB", variant: "destructive" });
+      toast({ title: t("file_size_limit_exceeded"), variant: "destructive" });
       return;
     }
     setSelectedFile(file);
@@ -93,9 +95,9 @@ export default function Documents() {
       setIsDialogOpen(false);
       setSelectedFile(null);
       setDocumentType("");
-      toast({ title: "Document uploaded successfully" });
+      toast({ title: t("document_uploaded_successfully") });
     } catch (error: any) {
-      toast({ title: "Error uploading document", description: error.message, variant: "destructive" });
+      toast({ title: t("error_uploading_document"), description: error.message, variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -115,10 +117,10 @@ export default function Documents() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
-      toast({ title: "Document deleted successfully" });
+      toast({ title: t("document_deleted_successfully") });
     },
     onError: (error) => {
-      toast({ title: "Error deleting document", description: error.message, variant: "destructive" });
+      toast({ title: t("error_deleting_document"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -136,12 +138,12 @@ export default function Documents() {
       a.click();
       URL.revokeObjectURL(url);
     } catch (error: any) {
-      toast({ title: "Error downloading document", description: error.message, variant: "destructive" });
+      toast({ title: t("error_downloading_document"), description: error.message, variant: "destructive" });
     }
   };
 
   const formatFileSize = (bytes: number | null) => {
-    if (!bytes) return "Unknown size";
+    if (!bytes) return t("unknown_size");
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -156,26 +158,26 @@ export default function Documents() {
       <div className="animate-fade-in space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">My Documents</h1>
-            <p className="text-muted-foreground">Upload and manage your application documents</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("my_documents_page_title")}</h1>
+            <p className="text-muted-foreground">{t("upload_manage_documents")}</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Upload className="h-4 w-4 mr-2" />
-                Upload Document
+                {t("upload_document")}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Upload Document</DialogTitle>
+                <DialogTitle>{t("upload_document")}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="document_type">Document Type *</Label>
+                  <Label htmlFor="document_type">{t("document_type")} *</Label>
                   <Select value={documentType} onValueChange={setDocumentType}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select document type" />
+                      <SelectValue placeholder={t("select_document_type")} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(DOCUMENT_TYPES).map(([key, label]) => (
@@ -187,7 +189,7 @@ export default function Documents() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>File (PDF only, max 5MB) *</Label>
+                  <Label>{t("file_pdf_only_max_5mb")} *</Label>
                   <FileDropzone
                     selectedFile={selectedFile}
                     onFileSelect={handleFileSelect}
@@ -199,7 +201,7 @@ export default function Documents() {
                   disabled={!selectedFile || !documentType || uploading}
                   className="w-full"
                 >
-                  {uploading ? "Uploading..." : "Upload Document"}
+                  {uploading ? t("uploading") : t("upload_document")}
                 </Button>
               </div>
             </DialogContent>
@@ -208,11 +210,11 @@ export default function Documents() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Uploaded Documents</CardTitle>
+            <CardTitle>{t("uploaded_documents")}</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              <div className="text-center py-8 text-muted-foreground">{t("loading")}</div>
             ) : documents && documents.length > 0 ? (
               <div className="space-y-3">
                 {documents.map((doc) => (
@@ -244,7 +246,7 @@ export default function Documents() {
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          if (confirm("Delete this document?")) deleteMutation.mutate(doc);
+                          if (confirm(t("delete_document_confirm"))) deleteMutation.mutate(doc);
                         }}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
@@ -256,9 +258,9 @@ export default function Documents() {
             ) : (
               <div className="text-center py-8">
                 <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">No documents uploaded yet</p>
+                <p className="text-muted-foreground">{t("no_documents_uploaded_yet")}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Upload your application documents to use them when applying for positions
+                  {t("upload_documents_to_use")}
                 </p>
               </div>
             )}
@@ -268,29 +270,29 @@ export default function Documents() {
         {/* Document Guidelines */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Document Guidelines</CardTitle>
+            <CardTitle className="text-base">{t("document_guidelines")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                Only PDF files are accepted
+                {t("pdf_only_accepted")}
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                Maximum file size is 5MB per document
+                {t("max_file_size_5mb")}
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                Ensure documents are clear and readable
+                {t("ensure_clear_readable")}
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                Personal Data Sheet (PDS) should be the latest CSC Form 212
+                {t("pds_latest_csc_form")}
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                Transcript of Records should be certified true copy
+                {t("transcript_certified_true_copy")}
               </li>
             </ul>
           </CardContent>
