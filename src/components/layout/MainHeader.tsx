@@ -65,7 +65,7 @@ export function MainHeader() {
           <Link to="/" className="flex items-center gap-3 group">
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center shadow-md"
+              className="h-10 w-10 flex-shrink-0" // Removed bg-primary, rounded-lg, flex items-center justify-center, shadow-md
             >
               <img src="/mgb-logo.png" alt="MGB Logo" className="h-full w-full object-contain" />
             </motion.div>
