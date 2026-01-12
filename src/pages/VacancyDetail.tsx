@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ApplicationFormDialog } from "@/components/application/ApplicationFormDialog";
+import { JobMatchAnalysis } from "@/components/ai/JobMatchAnalysis";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -64,6 +65,35 @@ export default function VacancyDetail() {
         .maybeSingle();
       if (error) throw error;
       return data;
+    },
+  });
+
+  // Fetch user's education and experience for AI matching
+  const { data: userEducation } = useQuery({
+    queryKey: ["user-education", user?.id],
+    enabled: !!user && isApplicant,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("educational_background")
+        .select("level, degree, field_of_study, school_name")
+        .eq("user_id", user!.id);
+      return data?.map((e) => 
+        `${e.degree || e.level} ${e.field_of_study ? `in ${e.field_of_study}` : ""} from ${e.school_name}`
+      ) || [];
+    },
+  });
+
+  const { data: userExperience } = useQuery({
+    queryKey: ["user-experience", user?.id],
+    enabled: !!user && isApplicant,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("work_experience")
+        .select("position_title, company_name, start_date, end_date")
+        .eq("user_id", user!.id);
+      return data?.map((e) => 
+        `${e.position_title} at ${e.company_name}`
+      ) || [];
     },
   });
 
@@ -166,6 +196,23 @@ export default function VacancyDetail() {
                   </p>
                 </div>
               </div>
+
+              {/* AI Match Analysis - show for logged-in applicants */}
+              {user && isApplicant && !existingApplication && !isDeadlinePassed && (
+                <div className="mt-6 pt-6 border-t">
+                  <JobMatchAnalysis
+                    vacancy={{
+                      position_title: vacancy.position_title,
+                      qualification_education: vacancy.qualification_education,
+                      qualification_experience: vacancy.qualification_experience,
+                      qualification_training: vacancy.qualification_training,
+                      qualification_eligibility: vacancy.qualification_eligibility,
+                    }}
+                    userEducation={userEducation}
+                    userExperience={userExperience}
+                  />
+                </div>
+              )}
 
               {/* Apply Button */}
               <div className="mt-6">
