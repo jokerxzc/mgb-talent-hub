@@ -95,9 +95,9 @@ export default function HRDashboard() {
   });
 
   const statusData = [
-    { name: "Submitted", value: stats?.pendingReview || 0, color: "hsl(var(--chart-1))" },
-    { name: "Under Review", value: stats?.underReview || 0, color: "hsl(var(--chart-2))" },
-    { name: "Shortlisted", value: stats?.shortlisted || 0, color: "hsl(var(--chart-3))" },
+    { name: "Submitted", value: stats?.pendingReview || 0, color: "hsl(var(--info))" },
+    { name: "Under Review", value: stats?.underReview || 0, color: "hsl(var(--warning))" },
+    { name: "Shortlisted", value: stats?.shortlisted || 0, color: "hsl(var(--primary))" },
   ];
 
   return (

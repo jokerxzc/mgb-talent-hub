@@ -85,7 +85,7 @@ export default function ApplicantDashboard() {
       const { count } = await supabase
         .from("documents")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", user!.id);
+        .eq("user!.id");
       return count || 0;
     },
   });

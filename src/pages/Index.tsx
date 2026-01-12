@@ -145,7 +145,7 @@ const Index = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <Badge className="bg-gold text-gold-foreground hover:bg-gold/90 text-sm px-3 py-1">
+                <Badge className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-3 py-1">
                   Now Hiring
                 </Badge>
               </motion.div>
@@ -155,7 +155,7 @@ const Index = () => {
                 transition={{ delay: 0.3 }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
               >
-                Build Your Career at <span className="text-gold">MGB</span>
+                Build Your Career at <span className="text-accent">MGB</span>
               </motion.h1>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
@@ -214,7 +214,7 @@ const Index = () => {
                 >
                   <Card className="bg-primary-foreground/10 border-primary-foreground/20 backdrop-blur">
                     <CardContent className="p-6 text-center">
-                      <stat.icon className="h-8 w-8 mx-auto mb-3 text-gold" />
+                      <stat.icon className="h-8 w-8 mx-auto mb-3 text-accent" />
                       <div className="text-3xl md:text-4xl font-bold text-primary-foreground">
                         {stat.value}
                       </div>

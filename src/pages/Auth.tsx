@@ -121,7 +121,7 @@ export default function Auth() {
       <div className="min-h-[80vh] flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md animate-fade-in">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 flex-shrink-0"> {/* Removed rounded-lg bg-primary flex items-center justify-center */}
+            <div className="mx-auto mb-4 h-12 w-12 flex-shrink-0">
               <img src="/mgb-logo.png" alt="MGB Logo" className="h-full w-full object-contain" />
             </div>
             <CardTitle>{isRegister ? "Create Account" : "Sign In"}</CardTitle>

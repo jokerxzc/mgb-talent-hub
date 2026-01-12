@@ -10,12 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, LogOut, LayoutDashboard, FileText, Briefcase, Menu, X, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
-import { ROUTES } from "@/lib/constants";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
-
-export function MainHeader() {
+import { useState, useEffect } => {
   const { user, role, signOut, isHRAdmin, isReviewer } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,7 +60,7 @@ export function MainHeader() {
           <Link to="/" className="flex items-center gap-3 group">
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="h-10 w-10 flex-shrink-0" // Removed bg-primary, rounded-lg, flex items-center justify-center, shadow-md
+              className="h-10 w-10 flex-shrink-0"
             >
               <img src="/mgb-logo.png" alt="MGB Logo" className="h-full w-full object-contain" />
             </motion.div>

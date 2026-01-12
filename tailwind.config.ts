@@ -70,14 +70,7 @@ export default {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
         },
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          foreground: "hsl(var(--gold-foreground))",
-        },
-        govph: {
-          blue: "hsl(var(--govph-blue))",
-          "blue-foreground": "hsl(var(--govph-blue-foreground))",
-        },
+        // Removed gold as a separate color, now using accent for gold
       },
       borderRadius: {
         lg: "var(--radius)",

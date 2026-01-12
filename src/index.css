@@ -5,7 +5,6 @@
 /* MGB Online Job Application System - Design System
    Colors based on MGB official branding:
    - Primary Green: MGB's environmental/mining green
-   - Government Blue: Philippine government standard blue
    - Accent Gold: Professional accent
    All colors are HSL.
 */
@@ -22,20 +21,20 @@
     --popover: 0 0% 100%;
     --popover-foreground: 150 25% 15%;
 
-    /* MGB Green Primary */
-    --primary: 145 63% 32%;
+    /* MGB Deep Green Primary */
+    --primary: 150 40% 20%;
     --primary-foreground: 0 0% 100%;
 
     /* Light green secondary */
-    --secondary: 145 30% 95%;
-    --secondary-foreground: 145 63% 25%;
+    --secondary: 150 15% 90%;
+    --secondary-foreground: 150 25% 25%;
 
     /* Muted backgrounds */
-    --muted: 150 15% 95%;
+    --muted: 150 10% 92%;
     --muted-foreground: 150 10% 40%;
 
-    /* Government Blue Accent */
-    --accent: 215 70% 45%;
+    /* MGB Gold Accent */
+    --accent: 43 74% 49%;
     --accent-foreground: 0 0% 100%;
 
     /* Destructive Red */
@@ -43,9 +42,9 @@
     --destructive-foreground: 0 0% 100%;
 
     /* Borders and inputs */
-    --border: 150 15% 85%;
-    --input: 150 15% 90%;
-    --ring: 145 63% 32%;
+    --border: 150 15% 80%;
+    --input: 150 15% 85%;
+    --ring: 150 40% 20%;
 
     --radius: 0.5rem;
 
@@ -54,26 +53,20 @@
     --success-foreground: 0 0% 100%;
     --warning: 45 93% 47%;
     --warning-foreground: 45 93% 15%;
-    --info: 215 70% 50%;
+    --info: 215 70% 50%; /* Keeping a blue for info status */
     --info-foreground: 0 0% 100%;
-
-    /* Gold accent */
-    --gold: 43 74% 49%;
-    --gold-foreground: 43 74% 15%;
 
     /* Sidebar - Professional dark green */
     --sidebar-background: 150 30% 18%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 145 63% 50%;
+    --sidebar-primary: 150 40% 30%; /* Slightly lighter primary for sidebar active */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 150 25% 25%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 150 20% 25%;
-    --sidebar-ring: 145 63% 50%;
+    --sidebar-ring: 150 40% 30%;
 
-    /* GOVPH header */
-    --govph-blue: 215 70% 35%;
-    --govph-blue-foreground: 0 0% 100%;
+    /* Removed --govph-blue */
   }
 
   .dark {
@@ -86,24 +79,24 @@
     --popover: 150 20% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 145 55% 45%;
+    --primary: 150 35% 30%; /* Darker MGB Green for dark mode */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 150 20% 18%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 150 15% 15%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 150 15% 20%;
+    --muted: 150 10% 18%;
     --muted-foreground: 150 10% 60%;
 
-    --accent: 215 60% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 43 70% 55%; /* MGB Gold for dark mode */
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 150 15% 25%;
-    --input: 150 15% 22%;
-    --ring: 145 55% 45%;
+    --border: 150 15% 20%;
+    --input: 150 15% 18%;
+    --ring: 150 35% 30%;
 
     --success: 145 55% 45%;
     --success-foreground: 0 0% 100%;
@@ -112,20 +105,16 @@
     --info: 215 60% 55%;
     --info-foreground: 0 0% 100%;
 
-    --gold: 43 70% 55%;
-    --gold-foreground: 0 0% 10%;
+    /* Removed --govph-blue */
 
     --sidebar-background: 150 25% 10%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 145 55% 50%;
+    --sidebar-primary: 150 35% 40%; /* Slightly lighter primary for sidebar active in dark mode */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 150 20% 18%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 150 15% 20%;
-    --sidebar-ring: 145 55% 50%;
-
-    --govph-blue: 215 60% 45%;
-    --govph-blue-foreground: 0 0% 100%;
+    --sidebar-ring: 150 35% 40%;
   }
 }
 
@@ -145,10 +134,7 @@
 }
 
 @layer components {
-  /* Government header bar */
-  .govph-header {
-    @apply bg-govph-blue text-govph-blue-foreground py-1 text-xs;
-  }
+  /* Removed .govph-header */
 
   /* Status badges */
   .status-badge {
