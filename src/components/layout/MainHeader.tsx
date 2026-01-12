@@ -10,7 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, LogOut, LayoutDashboard, FileText, Briefcase, Menu, X, ChevronRight } from "lucide-react";
-import { useState, useEffect } => {
+import { useState, useEffect } from "react"; // Corrected this line
+import { ROUTES } from "@/lib/constants";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+export function MainHeader() {
   const { user, role, signOut, isHRAdmin, isReviewer } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
