@@ -9,9 +9,7 @@ export function Footer() {
           {/* About */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">M</span>
-              </div>
+              <img src="/mgb-logo.png" alt="MGB Logo" className="h-10 w-10 object-contain" />
               <div>
                 <p className="font-semibold text-sidebar-foreground">
                   Mines and Geosciences Bureau

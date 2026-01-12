@@ -93,9 +93,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
             {sidebarOpen && (
               <Link to="/" className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">M</span>
-                </div>
+                <img src="/mgb-logo.png" alt="MGB Logo" className="h-8 w-8 object-contain" />
                 <span className="font-semibold text-sidebar-foreground text-sm">MGB Jobs</span>
               </Link>
             )}

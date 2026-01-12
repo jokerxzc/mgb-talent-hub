@@ -67,7 +67,7 @@ export function MainHeader() {
               whileHover={{ scale: 1.05 }}
               className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center shadow-md"
             >
-              <span className="text-primary-foreground font-bold text-lg">M</span>
+              <img src="/mgb-logo.png" alt="MGB Logo" className="h-full w-full object-contain" />
             </motion.div>
             <div className="hidden sm:block">
               <p className="font-semibold text-foreground leading-tight group-hover:text-primary transition-colors">
